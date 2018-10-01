@@ -1,0 +1,17 @@
+.metadata/
+.idea/
+/**/target/
+/**/tmp/
+/**/logs/
+/**/out/
+/**/build/
+/**/.gradle/
+/**/.vertx/
+/**/.project
+/**/.classpath
+/**/.settings
+/**/*.iml
+/*/**/.gitignore
+/*.ipr
+/*.iws
+

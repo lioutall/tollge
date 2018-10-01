@@ -1,0 +1,60 @@
+group 'io.tollge'
+version '0.1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'maven'
+
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+    maven { url 'https://plugins.gradle.org/m2/' }
+    maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' }
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+    maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
+}
+
+project.ext.vertx_version = "3.5.2"
+project.ext.jetcache_version = "2.5.2"
+
+dependencies {
+    // vertx组件
+    compile "io.vertx:vertx-core:" + vertx_version
+    compile "io.vertx:vertx-web:" + vertx_version
+    compile "io.vertx:vertx-web-client:" + vertx_version
+    compile "io.vertx:vertx-config:" + vertx_version
+
+    // 日志
+    compile "org.slf4j:slf4j-api:1.7.25"
+    compile "ch.qos.logback:logback-core:1.2.3"
+    compile "ch.qos.logback:logback-classic:1.2.3"
+//    compile "org.javassist:javassist:3.21.0-GA"
+
+    // 反射工具
+    compile 'org.reflections:reflections:0.9.11'
+    compile 'com.esotericsoftware:reflectasm:1.11.7'
+
+    // 多级缓存
+    compile "com.alicp.jetcache:jetcache-core:" + jetcache_version
+    compile "com.alicp.jetcache:jetcache-redis-lettuce:" + jetcache_version
+//    compile "com.alicp.jetcache:jetcache-starter-redis-lettuce:" + jetcache_version
+
+    // yaml工具
+    compile 'org.yaml:snakeyaml:1.17'
+
+    // 其他
+    compile 'org.projectlombok:lombok:1.16.20'
+
+    //-----------测试相关--------------------
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'io.vertx', name: 'vertx-unit', version: '3.5.0'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.8'
+}
