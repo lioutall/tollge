@@ -15,12 +15,35 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractDao extends AbstractVerticle {
     protected static final String GET_REAL_SQL_FAILED = "getRealSql failed, sqlKey={}";
 
+    /**
+     * return: numerical value
+     */
     public static final String COUNT = "dao://count";
+    /**
+     * return: JsonArray(via return) or deal number
+     */
     public static final String OPERATE = "dao://operate";
+    /**
+     * batch operation
+     * return: deal number
+     */
     public static final String BATCH = "dao://batch";
+    /**
+     * return: JsonObject
+     */
     public static final String ONE = "dao://one";
+    /**
+     * return: JsonArray
+     */
     public static final String LIST = "dao://list";
+    /**
+     * return: page
+     */
     public static final String PAGE = "dao://page";
+    /**
+     * execute via transaction
+     * two modes: all success(deal number > 0);  ignore deal number
+     */
     public static final String TRANSACTION = "dao://transaction";
 
     @Override
