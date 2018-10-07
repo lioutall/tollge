@@ -6,13 +6,16 @@ import io.tollge.common.util.Properties;
 import io.tollge.common.util.ReflectionUtil;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class RouterVerticle extends AbstractVerticle {
@@ -23,10 +26,14 @@ public class RouterVerticle extends AbstractVerticle {
 
         // 过滤器初始化
         Map<String, Object> filters = Properties.getGroup("filters");
-        filters.entrySet().forEach(c->{
+        filters.entrySet().stream().collect(Collectors.groupingBy(e -> e.getKey().replaceAll("\\.\\S+", ""),
+                Collectors.toMap(e -> e.getKey().replaceAll("^\\d+\\.", ""), Map.Entry::getValue)))
+                .entrySet().stream()
+                .sorted(Comparator.comparing(Map.Entry::getKey)).forEach(c -> {
             try {
-                router.route().handler((Handler<RoutingContext>)Class.forName((String)c.getValue()).getMethod("create").invoke(null));
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+                JsonObject o = JsonObject.mapFrom(c.getValue());
+                router.route(o.getString("pattern")).handler((Handler<RoutingContext>) Class.forName(o.getString("class")).getMethod("create").invoke(null));
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException | RuntimeException e) {
                 log.error("加载过滤器[{}]失败", c.getValue(), e);
             }
         });

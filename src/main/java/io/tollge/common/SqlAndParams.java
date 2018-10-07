@@ -41,7 +41,7 @@ public class SqlAndParams {
     public SqlAndParams(String sqlKey, Integer currentPage, Integer pageSize) {
         this.sqlKey = sqlKey;
 
-        limit = pageSize == null ? 0 : pageSize;
+        limit = pageSize == null ? 20 : pageSize;
         offset = (currentPage == null ? 1 : currentPage - 1) * limit;
     }
 
