@@ -6,7 +6,6 @@ import io.tollge.common.ResultFormat;
 import io.tollge.common.StatusCodeMsg;
 import io.tollge.common.UFailureHandler;
 import io.tollge.common.annotation.mark.Path;
-import io.tollge.common.annotation.mark.Router;
 import io.tollge.common.auth.Subject;
 import io.tollge.common.util.Const;
 import io.vertx.core.AsyncResult;
@@ -24,7 +23,7 @@ import java.util.Map;
 @Slf4j
 public abstract class AbstractRouter {
 
-    Map<Path, Handler<RoutingContext>> getMap() {
+    public Map<Path, Handler<RoutingContext>> getMap() {
         return map;
     }
 

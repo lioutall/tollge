@@ -12,4 +12,6 @@ public @interface Path {
     String value() default "";
 
     Method method() default Method.ROUTE;
+
+    String contentType() default "application/json";
 }

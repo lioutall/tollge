@@ -4,7 +4,6 @@ import io.tollge.common.annotation.mark.Biz;
 import io.tollge.common.util.MyVertx;
 import io.tollge.common.util.Properties;
 import io.tollge.common.util.ReflectionUtil;
-import io.tollge.common.verticle.RouterVerticle;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
@@ -60,10 +59,7 @@ public class MainVerticle extends AbstractVerticle {
             }));
         }
 
-        future.compose(res -> Future.<String>future(router -> {
-            log.debug("启动RouterVerticle...");
-            vertx.deployVerticle(new RouterVerticle(), router);
-        })).setHandler(res -> {
+        future.setHandler(res -> {
             if (res.succeeded()) {
                 log.info("启动完成...");
                 fut.complete();
