@@ -29,8 +29,8 @@ public class MainVerticle extends AbstractVerticle {
         });
 
         // 启动模块verticle
-        Map<String, Object> filters = Properties.getGroup("verticles");
-        Set<Map.Entry<String, Object>> list = filters.entrySet();
+        Map<String, Object> verticles = Properties.getGroup("verticles");
+        Set<Map.Entry<String, Object>> list = verticles.entrySet();
         for (Map.Entry<String, Object> entry : list) {
             future = future.compose(res -> Future.future(dao -> {
                 String value = (String) entry.getValue();
