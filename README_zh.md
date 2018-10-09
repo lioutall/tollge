@@ -6,7 +6,7 @@
 如果看不上module的实现, 我非常欢迎你贡献一个合适的module.
 
 #### 软件架构
-![image](https://gitee.com/tollge/tollge/blob/master/design.png)
+![image](http://p8ilcqqyk.bkt.clouddn.com/design.png)
 
 #### 依赖
 
@@ -28,8 +28,8 @@ compile 'io.tollge:tollge:0.1.0-SNAPSHOT'
 
 tollge提供基础规范, 由于基于vertx, 请先了解下vertx的基础知识, 目前实现的规范有:   
 
-1. verticle服务发布
-2. 全局的vertx对象
+1. 全局的vertx对象
+2. verticle服务发布
 3. Biz group自动发现
 4. annotation简化代码
 5. 多级缓存
