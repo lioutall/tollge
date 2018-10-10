@@ -6,9 +6,11 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@Repeatable(NotNulls.class)
-public @interface NotNull {
+@Repeatable(RegexValids.class)
+public @interface RegexValid {
     String key();
 
-    String msg() default "参数不能为空";
+    String regex();
+
+    String msg() default "参数不符合要求";
 }

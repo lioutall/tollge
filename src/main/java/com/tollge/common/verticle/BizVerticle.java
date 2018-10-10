@@ -12,6 +12,8 @@ import com.tollge.common.annotation.mark.Biz;
 import com.tollge.common.annotation.mark.Path;
 import com.tollge.common.annotation.valid.NotNull;
 import com.tollge.common.annotation.valid.NotNulls;
+import com.tollge.common.annotation.valid.RegexValid;
+import com.tollge.common.annotation.valid.RegexValids;
 import io.netty.util.internal.StringUtil;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
@@ -69,20 +71,22 @@ public class BizVerticle extends AbstractVerticle {
                         validate(body, hasBody, (NotNull) annotation);
                     }
 
-                    // 初始化
-                    if (annotation instanceof InitIfNulls && hasBody) {
-                        init(body, (InitIfNulls) annotation);
-                    }
-                    if (annotation instanceof InitIfNull && hasBody) {
-                        init(body, (InitIfNull) annotation);
-                    }
+                    if(hasBody) {
+                        // 初始化
+                        if (annotation instanceof InitIfNulls) {
+                            init(body, (InitIfNulls) annotation);
+                        }
+                        if (annotation instanceof InitIfNull) {
+                            init(body, (InitIfNull) annotation);
+                        }
 
-                    // 类型转换
-                    if (annotation instanceof ChangeTypes && hasBody) {
-                        changeType(body, (ChangeTypes) annotation);
-                    }
-                    if (annotation instanceof ChangeType && hasBody) {
-                        changeType(body, (ChangeType) annotation);
+                        // 类型转换
+                        if (annotation instanceof ChangeTypes) {
+                            changeType(body, (ChangeTypes) annotation);
+                        }
+                        if (annotation instanceof ChangeType) {
+                            changeType(body, (ChangeType) annotation);
+                        }
                     }
                 }
 
@@ -159,21 +163,39 @@ public class BizVerticle extends AbstractVerticle {
         }
     }
 
-    private void validate(JsonObject body, boolean hasBody, NotNulls annotation) {
-        NotNulls notNulls = annotation;
-        NotNull[] ns = notNulls.value();
-        for (NotNull n : ns) {
+    private void validate(JsonObject body, boolean hasBody, NotNulls ns) {
+        for (NotNull n : ns.value()) {
             validate(body, hasBody, n);
         }
     }
 
     private void validate(JsonObject body, boolean hasBody, NotNull n) {
+        Preconditions.checkArgument(hasBody, n.msg());
         Object value = body.getValue(n.key());
         if (value instanceof String) {
-            Preconditions.checkArgument(hasBody
-                    && !StringUtil.isNullOrEmpty(body.getString(n.key())), n.msg());
+            Preconditions.checkArgument(!StringUtil.isNullOrEmpty(body.getString(n.key())), n.msg());
         } else {
-            Preconditions.checkArgument(hasBody && value != null, n.msg());
+            Preconditions.checkArgument(value != null, n.msg());
+        }
+
+
+    }
+
+    private void validate(JsonObject body, boolean hasBody, RegexValids ns) {
+        for (RegexValid n : ns.value()) {
+            validate(body, hasBody, n);
+        }
+    }
+
+    private void validate(JsonObject body, boolean hasBody, RegexValid n) {
+        Preconditions.checkArgument(hasBody, n.msg());
+        Object value = body.getValue(n.key());
+        if (value instanceof String) {
+            String v = body.getString(n.key());
+            Preconditions.checkArgument(v != null
+                    && v.matches(body.getString(n.regex())), n.msg());
+        } else {
+            throw new IllegalArgumentException(n.key() + "is not string");
         }
 
 
@@ -187,10 +209,16 @@ public class BizVerticle extends AbstractVerticle {
     }
 
     protected void one(String sqlId, Message<JsonObject> msg, JsonObject append) {
-        base(sqlId, msg, append, AbstractDao.ONE);
+        SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
+        vertx.eventBus().send(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
     }
 
-    private void base(String sqlId, Message<JsonObject> msg, JsonObject append, String daoId) {
+    protected <T> void one(String sqlId, Message<JsonObject> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
+        SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
+        vertx.eventBus().send(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), replyHandler);
+    }
+
+    private SqlAndParams generateSqlAndParams(String sqlId, Message<JsonObject> msg, JsonObject append) {
         SqlAndParams sqlAndParams = new SqlAndParams(sqlId);
         JsonObject o = msg.body();
         if (o != null && o.size() > 0) {
@@ -200,8 +228,7 @@ public class BizVerticle extends AbstractVerticle {
         if (append != null && append.size() > 0) {
             append.forEach(entry -> sqlAndParams.putParam(entry.getKey(), entry.getValue()));
         }
-
-        vertx.eventBus().send(daoId, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
+        return sqlAndParams;
     }
 
     protected void count(Message<JsonObject> msg, SqlAndParams sqlAndParams) {
@@ -209,7 +236,13 @@ public class BizVerticle extends AbstractVerticle {
     }
 
     protected void count(String sqlId, Message<JsonObject> msg, JsonObject append) {
-        base(sqlId, msg, append, AbstractDao.COUNT);
+        SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
+        vertx.eventBus().send(AbstractDao.COUNT, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
+    }
+
+    protected <T> void count(String sqlId, Message<JsonObject> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
+        SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
+        vertx.eventBus().send(AbstractDao.COUNT, JsonObject.mapFrom(sqlAndParams), replyHandler);
     }
 
     /**
@@ -219,12 +252,15 @@ public class BizVerticle extends AbstractVerticle {
      * @param sqlAndParams
      */
     protected void list(Message<JsonObject> msg, SqlAndParams sqlAndParams) {
-        // 如果是分页
         vertx.eventBus().send(AbstractDao.LIST, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
     }
 
     protected void page(Message<JsonObject> msg, SqlAndParams sqlAndParams) {
         vertx.eventBus().send(AbstractDao.PAGE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
+    }
+
+    protected void list(String sqlId, Message<JsonObject> msg, JsonObject append) {
+        list(sqlId, msg, append, bizResultHandler.apply(msg, new SqlAndParams(sqlId)));
     }
 
     protected void list(String sqlId, Message<JsonObject> msg, JsonObject append, Handler<AsyncResult<Message<Object>>> replyHandler) {
@@ -255,22 +291,28 @@ public class BizVerticle extends AbstractVerticle {
         vertx.eventBus().send(daoId, JsonObject.mapFrom(sqlAndParams), replyHandler);
     }
 
-    protected void list(String sqlId, Message<JsonObject> msg, JsonObject append) {
-        list(sqlId, msg, append, bizResultHandler.apply(msg, new SqlAndParams(sqlId)));
-    }
-
-
     protected void operate(Message<JsonObject> msg, SqlAndParams sqlAndParams) {
         vertx.eventBus().send(AbstractDao.OPERATE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
     }
 
     protected void operate(String sqlId, Message<JsonObject> msg, JsonObject append) {
-        base(sqlId, msg, append, AbstractDao.OPERATE);
+        SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
+        vertx.eventBus().send(AbstractDao.OPERATE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
+    }
+
+    protected <T> void operate(String sqlId, Message<JsonObject> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
+        SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
+        vertx.eventBus().send(AbstractDao.OPERATE, JsonObject.mapFrom(sqlAndParams), replyHandler);
     }
 
     protected void batch(Message<JsonObject> msg, List<SqlAndParams> sqlAndParamsList) {
         validateSqlAndParam(sqlAndParamsList);
         vertx.eventBus().send(AbstractDao.BATCH, new JsonArray(sqlAndParamsList), bizResultHandler.apply(msg, sqlAndParamsList.get(0)));
+    }
+
+    protected <T> void batch(Message<JsonObject> msg, List<SqlAndParams> sqlAndParamsList, Handler<AsyncResult<Message<T>>> replyHandler) {
+        validateSqlAndParam(sqlAndParamsList);
+        vertx.eventBus().send(AbstractDao.BATCH, new JsonArray(sqlAndParamsList), replyHandler);
     }
 
     protected void transaction(Message<JsonObject> msg, List<SqlAndParams> sqlAndParamsList) {
