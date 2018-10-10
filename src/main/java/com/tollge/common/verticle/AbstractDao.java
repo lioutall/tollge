@@ -20,7 +20,7 @@ public abstract class AbstractDao extends AbstractVerticle {
      */
     public static final String COUNT = "dao://count";
     /**
-     * return: JsonArray(via return) or deal number
+     * return: JsonArray(via return sql) or deal number
      */
     public static final String OPERATE = "dao://operate";
     /**
@@ -42,7 +42,7 @@ public abstract class AbstractDao extends AbstractVerticle {
     public static final String PAGE = "dao://page";
     /**
      * execute via transaction
-     * two modes: all success(deal number > 0);  ignore deal number
+     * two modes: all success(each deal number > 0);  ignore deal number
      */
     public static final String TRANSACTION = "dao://transaction";
 
