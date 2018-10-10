@@ -1,4 +1,4 @@
-group 'io.tollge'
+group 'com.tollge'
 version '0.1.0-SNAPSHOT'
 
 apply plugin: 'java'

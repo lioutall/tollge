@@ -14,14 +14,14 @@ Requires JDK1.8+ support.
 maven
 ```
 <dependency>
-    <groupId>io.tollge</groupId>
+    <groupId>com.tollge</groupId>
     <artifactId>tollge</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 </dependency>
 ```
 Gradle
 ```
-compile 'io.tollge:tollge:0.1.0-SNAPSHOT'
+compile 'com.tollge:tollge:0.1.0-SNAPSHOT'
 ```
 
 #### Instruction manual
