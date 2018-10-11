@@ -70,6 +70,12 @@ public class BizVerticle extends AbstractVerticle {
                     if (annotation instanceof NotNull) {
                         validate(body, hasBody, (NotNull) annotation);
                     }
+                    if (annotation instanceof RegexValids) {
+                        validate(body, hasBody, (RegexValids) annotation);
+                    }
+                    if (annotation instanceof RegexValid) {
+                        validate(body, hasBody, (RegexValid) annotation);
+                    }
 
                     if(hasBody) {
                         // 初始化
