@@ -44,7 +44,7 @@ public class SucceedHandle {
             if (event.result() != null) {
                 log.error("==>[{}] failed", event.result().address(), event.cause());
             } else {
-                log.error("==>[biz://?] failed", event.cause());
+                log.error("==>[router://?] failed", event.cause());
             }
             rct.response().end(UFailureHandler.commonFailure(event.cause()));
         }
