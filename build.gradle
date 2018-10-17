@@ -1,9 +1,10 @@
 group 'com.tollge'
-version '0.1.0-SNAPSHOT'
+archivesBaseName "tollge"
+version '0.1.0'
 
 apply plugin: 'java'
 apply plugin: 'maven'
-
+apply plugin: 'signing'
 
 sourceCompatibility = 1.8
 
@@ -57,4 +58,66 @@ dependencies {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.8'
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'tollge'
+                packaging 'jar'
+                description 'Based on the specification of a set of frameworks implemented by vertx, you need to use the modules to run it. Simply assemble it to implement common functions. '
+                url 'http://www.tollge.com/tollge'
+
+                scm {
+                    connection 'scm:git:git://github.com/lioutall/tollge.git'
+                    developerConnection 'scm:git:ssh://github.com/lioutall/tollge.git'
+                    url '\thttps://github.com/lioutall/tollge'
+                }
+
+                licenses {
+                    license {
+                        name 'MIT License'
+                        url 'http://www.opensource.org/licenses/mit-license.php'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'manfred'
+                        name 'LiuTuo'
+                        email 'lioutall@163.com'
+                    }
+                }
+            }
+        }
+    }
 }
