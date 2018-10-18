@@ -1,5 +1,4 @@
 group 'com.tollge'
-archivesBaseName "tollge"
 version '0.1.0'
 
 apply plugin: 'java'
@@ -7,6 +6,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 sourceCompatibility = 1.8
+archivesBaseName= 'tollge'
 
 repositories {
     mavenLocal()
@@ -112,7 +112,7 @@ uploadArchives {
 
                 developers {
                     developer {
-                        id 'manfred'
+                        id 'tollge'
                         name 'LiuTuo'
                         email 'lioutall@163.com'
                     }
