@@ -42,9 +42,9 @@ public class Subject {
     /**
      * 用户登录
      *
-     * @param ctx
-     * @param authInfo
-     * @param resultHandler
+     * @param ctx []
+     * @param authInfo 鉴权信息
+     * @param resultHandler 回调
      */
     public void login(RoutingContext ctx, JsonObject authInfo, Handler<AsyncResult<String>> resultHandler) {
         authCustom.login(ctx, authInfo, f->{
@@ -77,8 +77,8 @@ public class Subject {
     /**
      * 验证用户权限
      *
-     * @param authority
-     * @param resultHandler
+     * @param authority 权限
+     * @param resultHandler 回调
      */
     public void isAuthorised(String authority, Handler<AsyncResult<Boolean>> resultHandler) {
         authUser.isAuthorized(authority, resultHandler);
@@ -86,6 +86,7 @@ public class Subject {
 
     /**
      * 用户注销
+     * @param resultHandler []
      */
     public void logout(Handler<AsyncResult<Void>> resultHandler) {
         authCustom.removeSubject(this.sessionID, resultHandler);

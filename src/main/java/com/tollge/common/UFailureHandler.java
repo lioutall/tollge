@@ -16,7 +16,7 @@ public class UFailureHandler {
 	/**
 	 * 当router发生异常时统一使用该方法处理
 	 *
-	 * @param rct
+	 * @param rct []
 	 */
 	public static void unifiedFail(RoutingContext rct) {
 		String result;

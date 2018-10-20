@@ -96,6 +96,8 @@ public abstract class AbstractRouter {
      *
      * @param biz []
      * @param rct []
+     * @param replyHandler []
+     * @param <T> []
      */
     protected <T> void sendBiz(String biz, RoutingContext rct, Handler<AsyncResult<Message<T>>> replyHandler) {
         JsonObject jo = rct.getBody() == null || rct.getBody().length() == 0 ? new JsonObject() : rct.getBodyAsJson();

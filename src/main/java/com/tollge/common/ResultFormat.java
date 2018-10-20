@@ -23,9 +23,9 @@ public class ResultFormat {
     /**
      * 格式化返回结果,code为状态码枚举类,data为数据
      *
-     * @param code []
-     * @param data []
-     * @return
+     * @param code 状态码
+     * @param data 数据
+     * @return 格式化返回
      */
     public static String format(StatusCodeMsg code, Object data) {
         if (data instanceof JsonArray) return format(code, (JsonArray) data);
@@ -37,9 +37,9 @@ public class ResultFormat {
     /**
      * 格式化返回结果,code为状态码枚举类,data为数据
      *
-     * @param code
-     * @param data
-     * @return
+     * @param code 状态码
+     * @param data 数据
+     * @return 格式化返回
      */
     public static String format(StatusCodeMsg code, JsonArray data) {
         if (data == null) {
@@ -51,9 +51,9 @@ public class ResultFormat {
     /**
      * 格式化返回结果,code为状态码枚举类,data为数据
      *
-     * @param code
-     * @param data
-     * @return
+     * @param code 状态码
+     * @param data 数据
+     * @return 格式化返回
      */
     public static String format(StatusCodeMsg code, JsonObject data) {
         if (data == null) {
@@ -65,8 +65,8 @@ public class ResultFormat {
     /**
      * 格式化返回结果其中data为null,code为状态码枚举类
      *
-     * @param code
-     * @return
+     * @param code 状态码
+     * @return 格式化返回
      */
     public static String formatAsNull(StatusCodeMsg code) {
         return resultWithoutData(code);
@@ -92,9 +92,9 @@ public class ResultFormat {
     /**
      * 格式化返回结果,code为状态码枚举类,data为数据
      *
-     * @param code []
-     * @param message []
-     * @return []
+     * @param code 状态码
+     * @param message 错误信息
+     * @return 格式化返回
      */
     public static String formatError(StatusCodeMsg code, String message) {
         return resultWithoutData(code, message);

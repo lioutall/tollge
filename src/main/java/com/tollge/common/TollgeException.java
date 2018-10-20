@@ -6,7 +6,6 @@ import lombok.Getter;
  * 定义异常
  *
  * @author toyer
- * @date 2018-09-21
  */
 @Getter
 public class TollgeException extends RuntimeException {

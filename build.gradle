@@ -1,5 +1,5 @@
 group 'com.tollge'
-version '0.1.0'
+version '0.1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -100,7 +100,7 @@ uploadArchives {
                 scm {
                     connection 'scm:git:git://github.com/lioutall/tollge.git'
                     developerConnection 'scm:git:ssh://github.com/lioutall/tollge.git'
-                    url '\thttps://github.com/lioutall/tollge'
+                    url 'https://github.com/lioutall/tollge'
                 }
 
                 licenses {

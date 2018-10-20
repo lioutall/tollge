@@ -16,12 +16,12 @@ maven
 <dependency>
     <groupId>com.tollge</groupId>
     <artifactId>tollge</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 Gradle
 ```
-compile 'com.tollge:tollge:0.1.0-SNAPSHOT'
+compile 'com.tollge:tollge:0.1.0'
 ```
 
 #### Instruction manual

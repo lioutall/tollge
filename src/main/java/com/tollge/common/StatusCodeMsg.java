@@ -73,7 +73,7 @@ public enum StatusCodeMsg {
 	/**
 	 * 得到状态码
 	 * 
-	 * @return
+	 * @return 状态码
 	 */
 	public int getCode() {
 		return code;
@@ -82,7 +82,7 @@ public enum StatusCodeMsg {
 	/**
 	 * 获得状态码相应的信息
 	 * 
-	 * @return
+	 * @return 状态信息
 	 */
 	public String getMsg() {
 		return msg;

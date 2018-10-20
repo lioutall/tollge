@@ -209,6 +209,9 @@ public class BizVerticle extends AbstractVerticle {
 
     /**********************
      *  以下是sql方法封装, 便于使用
+
+     * @param msg []
+     * @param sqlAndParams []
      */
     protected void one(Message<JsonObject> msg, SqlAndParams sqlAndParams) {
         vertx.eventBus().send(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
@@ -254,8 +257,8 @@ public class BizVerticle extends AbstractVerticle {
     /**
      * 传了分页参数, 就走分页流程
      *
-     * @param msg
-     * @param sqlAndParams
+     * @param msg []
+     * @param sqlAndParams []
      */
     protected void list(Message<JsonObject> msg, SqlAndParams sqlAndParams) {
         vertx.eventBus().send(AbstractDao.LIST, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));

@@ -42,7 +42,7 @@ public abstract class AbstractDao extends AbstractVerticle {
     public static final String PAGE = "dao://page";
     /**
      * execute via transaction
-     * two modes: all success(each deal number > 0);  ignore deal number
+     * two modes: all success(each deal number bigger than 0);  ignore deal number
      */
     public static final String TRANSACTION = "dao://transaction";
 
