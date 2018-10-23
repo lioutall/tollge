@@ -1,6 +1,8 @@
 package com.tollge.common.auth;
 
 import com.google.common.collect.ImmutableSet;
+import com.tollge.common.ResultFormat;
+import com.tollge.common.StatusCodeMsg;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
@@ -65,4 +67,20 @@ public abstract class AbstractAuth {
      * @param resultHandler []
      */
     public abstract void getAnnoPremissions(Handler<AsyncResult<ImmutableSet<String>>> resultHandler);
+
+    /**
+     * 用户不具备访问permission权限处理
+     * @param ctx []
+     */
+    public void failAuthenticate(RoutingContext ctx) {
+        ctx.response().end(ResultFormat.format(StatusCodeMsg.C314, new JsonObject()));
+    }
+
+    /**
+     * 用户不存在或登录失败处理
+     * @param ctx []
+     */
+    public void failLogin(RoutingContext ctx) {
+        ctx.response().end(ResultFormat.format(StatusCodeMsg.C300, new JsonObject()));
+    }
 }
