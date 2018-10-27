@@ -59,45 +59,50 @@ public class BizVerticle extends AbstractVerticle {
             String path = this.getClass().getAnnotation(Biz.class).value() + pathMark.value();
             int methodIndex = access.getIndex(m.getName());
             vertx.eventBus().<JsonObject>consumer(path, msg -> {
-
-                JsonObject body = msg.body();
-                boolean hasBody = body != null;
-                for (Annotation annotation : m.getDeclaredAnnotations()) {
-                    // 校验
-                    if (annotation instanceof NotNulls) {
-                        validate(body, hasBody, (NotNulls) annotation);
-                    }
-                    if (annotation instanceof NotNull) {
-                        validate(body, hasBody, (NotNull) annotation);
-                    }
-                    if (annotation instanceof RegexValids) {
-                        validate(body, hasBody, (RegexValids) annotation);
-                    }
-                    if (annotation instanceof RegexValid) {
-                        validate(body, hasBody, (RegexValid) annotation);
-                    }
-
-                    if(hasBody) {
-                        // 初始化
-                        if (annotation instanceof InitIfNulls) {
-                            init(body, (InitIfNulls) annotation);
+                try {
+                    JsonObject body = msg.body();
+                    boolean hasBody = body != null;
+                    for (Annotation annotation : m.getDeclaredAnnotations()) {
+                        // 校验
+                        if (annotation instanceof NotNulls) {
+                            validate(body, hasBody, (NotNulls) annotation);
                         }
-                        if (annotation instanceof InitIfNull) {
-                            init(body, (InitIfNull) annotation);
+                        if (annotation instanceof NotNull) {
+                            validate(body, hasBody, (NotNull) annotation);
+                        }
+                        if (annotation instanceof RegexValids) {
+                            validate(body, hasBody, (RegexValids) annotation);
+                        }
+                        if (annotation instanceof RegexValid) {
+                            validate(body, hasBody, (RegexValid) annotation);
                         }
 
-                        // 类型转换
-                        if (annotation instanceof ChangeTypes) {
-                            changeType(body, (ChangeTypes) annotation);
-                        }
-                        if (annotation instanceof ChangeType) {
-                            changeType(body, (ChangeType) annotation);
+                        if (hasBody) {
+                            // 初始化
+                            if (annotation instanceof InitIfNulls) {
+                                init(body, (InitIfNulls) annotation);
+                            }
+                            if (annotation instanceof InitIfNull) {
+                                init(body, (InitIfNull) annotation);
+                            }
+
+                            // 类型转换
+                            if (annotation instanceof ChangeTypes) {
+                                changeType(body, (ChangeTypes) annotation);
+                            }
+                            if (annotation instanceof ChangeType) {
+                                changeType(body, (ChangeType) annotation);
+                            }
                         }
                     }
+                    // 最终调用
+                    access.invoke(this, methodIndex, msg);
+                } catch (IllegalArgumentException e) {
+                    msg.fail(StatusCodeMsg.C414.getCode(), e.getMessage());
+                } catch (Exception e) {
+                    log.error("check or init error, path:{}", path, e);
+                    msg.fail(StatusCodeMsg.C500.getCode(), e.getMessage());
                 }
-
-                access.invoke(this, methodIndex, msg);
-
             });
             log.info("服务 {}", path);
         });

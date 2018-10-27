@@ -28,12 +28,44 @@ compile 'com.tollge:tollge:0.1.0'
 
 tollge提供基础规范, 由于基于vertx, 请先了解下vertx的基础知识, 目前实现的规范有:   
 
-1. 全局的vertx对象
-2. verticle服务发布
-3. Biz group自动发现
-4. annotation简化代码
-5. 多级缓存
-6. 全局参数的方案
+1. 全局的vertx对象   
+你可以使用 MyVertx.vertx()获取vertx对象
+2. 全局参数的方案   
+第一步加载moudules/tollge.yml, 把所有配置加载成 String,String的map   
+加载使用覆盖策略, 最后加载project中的tollge.yml
+3. verticle服务发布   
+你可以在tollge.yml里添加verticles.xxx:com.xxx.xxx.xxVerticle来加载verticle.
+4. Biz group自动发现   
+默认加载package为com.tollge.modules.**下的所有Biz   
+可以通过在tollge.yml里添加 application.baseScan:com.xxx 来加载com.xxx包下的所有Biz   
+什么是Biz? 它就是vertx里一个provider. tollge它是这样写的:
+```
+@Biz("biz://tt")
+public class HttpBiz extends BizVerticle {
+    /**
+     * 测试
+     */
+    @Path("/one")
+    @NotNull(key="key")
+    public void one(Message<JsonObject> msg) {
+        String key = msg.body().getString("key");
+        msg.reply(key+" response");
+    }
+
+}
+```
+5. annotation简化代码   
+目前提供两类注解
+|注解类型|注解名|作用|参数|
+|-|-|-|
+|校验|NotNull|空校验|key: 校验的关键字 msg:错误提示|
+|校验|RegexValid|正则校验|key: 校验的关键字 regex:表达式 msg:错误提示|
+|数据改变|InitIfNull|如果key为空,则初始化|key: 关键字 value:初始化字段|
+|数据改变|ChangeType|改变数据类型|key: 关键字 from:从什么类型 to:变成什么类型|
+6. 对数据层封装   
+extends BizVerticle后, 你可以使用page, list, one, count等方法来大大简化代码.
+7. 多级缓存   
+引入了JetCache, 工具类CacheUtil做了初步包装. 建议自己定制一下, 原生的不好用.
 
 持续优化中...
 
