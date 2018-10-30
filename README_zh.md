@@ -6,7 +6,7 @@
 如果看不上module的实现, 我非常欢迎你贡献一个合适的module.
 
 #### 软件架构
-![image](http://p8ilcqqyk.bkt.clouddn.com/design.png)
+![image](https://github.com/lioutall/tollge/blob/master/de.png)
 
 #### 依赖
 
