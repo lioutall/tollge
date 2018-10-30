@@ -31,13 +31,13 @@ tollge提供基础规范, 由于基于vertx, 请先了解下vertx的基础知识
 1. 全局的vertx对象   
 你可以使用 MyVertx.vertx()获取vertx对象
 2. 全局参数的方案   
-第一步加载moudules/tollge.yml, 把所有配置加载成 String,String的map   
-加载使用覆盖策略, 最后加载project中的tollge.yml
+第一步加载moudules/tollge.yml, 把所有配置加载成 `<String, String>`的map   
+后加载覆盖先加载的, 最后加载用户project中的tollge.yml
 3. verticle服务发布   
-你可以在tollge.yml里添加verticles.xxx:com.xxx.xxx.xxVerticle来加载verticle.
+你可以在tollge.yml里添加`verticles.xxx: com.xxx.xxx.xxVerticle`来deploy verticle.
 4. Biz group自动发现   
-默认加载package为com.tollge.modules.**下的所有Biz   
-可以通过在tollge.yml里添加 application.baseScan:com.xxx 来加载com.xxx包下的所有Biz   
+默认加载package为`com.tollge.modules.**`下的所有Biz   
+可以通过在tollge.yml里添加`application.baseScan: com.xxx` 来加载`com.xxx`包下的所有Biz   
 什么是Biz? 它就是vertx里一个provider. tollge它是这样写的:
 ```
 @Biz("biz://tt")
@@ -71,7 +71,7 @@ extends BizVerticle后, 你可以使用page, list, one, count等方法来大大�
 
 #### 已实现的模块
 
-请参看module说明
+请参看[module说明](https://github.com/lioutall/tollge-modules)
 
 #### 参与贡献
 
