@@ -7,7 +7,7 @@ Learn from the springboot configuration, what features you need, just need to im
 If you don't like the module implementation, welcome to contribute a suitable module.
 
 #### Architecture
-![image](http://p8ilcqqyk.bkt.clouddn.com/design.png)
+![image](https://github.com/lioutall/tollge/blob/master/de.png)
 
 #### Dependence
 
