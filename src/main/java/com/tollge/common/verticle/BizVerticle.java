@@ -66,14 +66,11 @@ public class BizVerticle extends AbstractVerticle {
                         // 校验
                         if (annotation instanceof NotNulls) {
                             validate(body, hasBody, (NotNulls) annotation);
-                        }
-                        if (annotation instanceof NotNull) {
+                        } else if (annotation instanceof NotNull) {
                             validate(body, hasBody, (NotNull) annotation);
-                        }
-                        if (annotation instanceof RegexValids) {
+                        } else if (annotation instanceof RegexValids) {
                             validate(body, hasBody, (RegexValids) annotation);
-                        }
-                        if (annotation instanceof RegexValid) {
+                        } else if (annotation instanceof RegexValid) {
                             validate(body, hasBody, (RegexValid) annotation);
                         }
 
@@ -81,16 +78,13 @@ public class BizVerticle extends AbstractVerticle {
                             // 初始化
                             if (annotation instanceof InitIfNulls) {
                                 init(body, (InitIfNulls) annotation);
-                            }
-                            if (annotation instanceof InitIfNull) {
+                            } else if (annotation instanceof InitIfNull) {
                                 init(body, (InitIfNull) annotation);
                             }
-
                             // 类型转换
-                            if (annotation instanceof ChangeTypes) {
+                            else if (annotation instanceof ChangeTypes) {
                                 changeType(body, (ChangeTypes) annotation);
-                            }
-                            if (annotation instanceof ChangeType) {
+                            } else if (annotation instanceof ChangeType) {
                                 changeType(body, (ChangeType) annotation);
                             }
                         }
@@ -188,8 +182,6 @@ public class BizVerticle extends AbstractVerticle {
         } else {
             Preconditions.checkArgument(value != null, n.msg());
         }
-
-
     }
 
     private void validate(JsonObject body, boolean hasBody, RegexValids ns) {
@@ -208,8 +200,6 @@ public class BizVerticle extends AbstractVerticle {
         } else {
             throw new IllegalArgumentException(n.key() + "is not string");
         }
-
-
     }
 
     /**********************
