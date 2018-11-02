@@ -11,6 +11,7 @@ import com.tollge.common.util.Const;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
@@ -58,7 +59,12 @@ public abstract class AbstractRouter {
         if (params != null && !params.isEmpty()) {
             params.forEach(e -> jo.put(e.getKey(), e.getValue()));
         }
-        rct.vertx().eventBus().<T>send(biz, jo, replyHandler);
+
+        sendBiz(biz, jo, rct, new DeliveryOptions(), replyHandler);
+    }
+
+    private <T> void sendBiz(String biz, JsonObject jo, RoutingContext rct, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
+        rct.vertx().eventBus().<T>send(biz, jo, deliveryOptions, replyHandler);
     }
 
     protected void sendBizWithUser(String biz, RoutingContext rct) {
