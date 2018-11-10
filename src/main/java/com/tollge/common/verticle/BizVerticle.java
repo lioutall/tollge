@@ -14,6 +14,7 @@ import com.tollge.common.annotation.valid.NotNull;
 import com.tollge.common.annotation.valid.NotNulls;
 import com.tollge.common.annotation.valid.RegexValid;
 import com.tollge.common.annotation.valid.RegexValids;
+import com.tollge.common.util.Const;
 import io.netty.util.internal.StringUtil;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
@@ -324,16 +325,9 @@ public class BizVerticle extends AbstractVerticle {
         sendDB(AbstractDao.BATCH, new JsonArray(sqlAndParamsList), bizResultHandler.apply(msg, sqlAndParamsList.get(0)));
     }
 
-    protected <T> void batch(Message<JsonObject> msg, List<SqlAndParams> sqlAndParamsList, Handler<AsyncResult<Message<T>>> replyHandler) {
+    protected <T> void batch(List<SqlAndParams> sqlAndParamsList, Handler<AsyncResult<Message<T>>> replyHandler) {
         validateSqlAndParam(sqlAndParamsList);
         sendDB(AbstractDao.BATCH, new JsonArray(sqlAndParamsList), replyHandler);
-    }
-
-    protected void transaction(Message<JsonObject> msg, List<SqlAndParams> sqlAndParamsList) {
-        validateSqlAndParam(sqlAndParamsList);
-        sendDB(AbstractDao.TRANSACTION,
-                new JsonArray(sqlAndParamsList.stream().map(JsonObject::mapFrom).collect(Collectors.toList())),
-                bizResultHandler.apply(msg, sqlAndParamsList.get(0)));
     }
 
     private void validateSqlAndParam(List<SqlAndParams> sqlAndParamsList) {
@@ -342,10 +336,63 @@ public class BizVerticle extends AbstractVerticle {
         }
     }
 
+    /**
+     * do one by one, rollback when the deal number is 0
+     * sql "update ..." and its result is "deal number"
+     * rollback when error occur
+     * @param msg []
+     * @param sqlAndParamsList []
+     */
+    protected void transaction(Message<JsonObject> msg, List<SqlAndParams> sqlAndParamsList) {
+        validateSqlAndParam(sqlAndParamsList);
+        sendDB(AbstractDao.TRANSACTION,
+                new JsonArray(sqlAndParamsList.stream().map(JsonObject::mapFrom).collect(Collectors.toList())),
+                new DeliveryOptions().addHeader(Const.IGNORE, "0"),
+                bizResultHandler.apply(msg, sqlAndParamsList.get(0)));
+    }
+
+    /**
+     * do one by one, rollback when the deal number is 0
+     * sql "update ..." and its result is "deal number"
+     * rollback when error occur
+     * @param replyHandler []
+     * @param sqlAndParamsList []
+     */
     protected void transaction(List<SqlAndParams> sqlAndParamsList, Handler<AsyncResult<Message<Integer>>> replyHandler) {
         validateSqlAndParam(sqlAndParamsList);
         sendDB(AbstractDao.TRANSACTION,
                 new JsonArray(sqlAndParamsList.stream().map(JsonObject::mapFrom).collect(Collectors.toList())),
+                new DeliveryOptions().addHeader(Const.IGNORE, "0"),
+                replyHandler);
+    }
+
+    /**
+     * do one by one, no matter the deal number is 0
+     * sql "update ..." and its result is "deal number"
+     * rollback when error occur
+     * @param msg []
+     * @param sqlAndParamsList []
+     */
+    protected void transactionIgnoreDealNum(Message<JsonObject> msg, List<SqlAndParams> sqlAndParamsList) {
+        validateSqlAndParam(sqlAndParamsList);
+        sendDB(AbstractDao.TRANSACTION,
+                new JsonArray(sqlAndParamsList.stream().map(JsonObject::mapFrom).collect(Collectors.toList())),
+                new DeliveryOptions().addHeader(Const.IGNORE, "1"),
+                bizResultHandler.apply(msg, sqlAndParamsList.get(0)));
+    }
+
+    /**
+     * do one by one, no matter the deal number is 0
+     * sql "update ..." and its result is "deal number"
+     * rollback when error occur
+     * @param replyHandler []
+     * @param sqlAndParamsList []
+     */
+    protected void transactionIgnoreDealNum(List<SqlAndParams> sqlAndParamsList, Handler<AsyncResult<Message<Integer>>> replyHandler) {
+        validateSqlAndParam(sqlAndParamsList);
+        sendDB(AbstractDao.TRANSACTION,
+                new JsonArray(sqlAndParamsList.stream().map(JsonObject::mapFrom).collect(Collectors.toList())),
+                new DeliveryOptions().addHeader(Const.IGNORE, "1"),
                 replyHandler);
     }
 

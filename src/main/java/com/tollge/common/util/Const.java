@@ -10,4 +10,5 @@ public class Const {
 
     public static final String TOLLGE_PAGE_COUNT = "X-Total-Count";
     public static final String TOLLGE_PAGE_DATA = "data";
+    public static final String IGNORE = "ignore";
 }

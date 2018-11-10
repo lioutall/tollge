@@ -20,8 +20,8 @@ repositories {
     maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
 }
 
-project.ext.vertx_version = "3.5.2"
-project.ext.jetcache_version = "2.5.2"
+project.ext.vertx_version = "3.5.4"
+project.ext.jetcache_version = "2.5.9"
 
 dependencies {
     // vertx组件
