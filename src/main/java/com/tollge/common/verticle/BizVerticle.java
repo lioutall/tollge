@@ -97,17 +97,22 @@ public class BizVerticle extends AbstractVerticle {
             }
 
             if (hasBody) {
-                // 初始化
-                if (annotation instanceof InitIfNulls) {
-                    init(body, (InitIfNulls) annotation);
-                } else if (annotation instanceof InitIfNull) {
-                    init(body, (InitIfNull) annotation);
-                }
-                // 类型转换
-                else if (annotation instanceof ChangeTypes) {
-                    changeType(body, (ChangeTypes) annotation);
-                } else if (annotation instanceof ChangeType) {
-                    changeType(body, (ChangeType) annotation);
+                try {
+                    // 初始化
+                    if (annotation instanceof InitIfNulls) {
+                        init(body, (InitIfNulls) annotation);
+                    } else if (annotation instanceof InitIfNull) {
+                        init(body, (InitIfNull) annotation);
+                    }
+                    // 类型转换
+                    else if (annotation instanceof ChangeTypes) {
+                        changeType(body, (ChangeTypes) annotation);
+                    } else if (annotation instanceof ChangeType) {
+                        changeType(body, (ChangeType) annotation);
+                    }
+                } catch (Exception e) {
+                    log.error("[{}]Init data error", msg.address(), e);
+                    throw e;
                 }
             }
         }
