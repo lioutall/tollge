@@ -60,6 +60,7 @@ public class HttpBiz extends BizVerticle {
 |-|-|-|
 |校验|NotNull|空校验|key: 校验的关键字 msg:错误提示|
 |校验|RegexValid|正则校验|key: 校验的关键字 regex:表达式 msg:错误提示|
+|校验|LengthValid|长度校验,只能校验String和JsonArray|key: 校验的关键字 min:最小长度 max:最大长度 msg:错误提示|
 |数据改变|InitIfNull|如果key为空,则初始化|key: 关键字 value:初始化字段|
 |数据改变|ChangeType|改变数据类型|key: 关键字 from:从什么类型 to:变成什么类型|
 6. 对数据层封装   

@@ -10,10 +10,7 @@ import com.tollge.common.annotation.data.InitIfNull;
 import com.tollge.common.annotation.data.InitIfNulls;
 import com.tollge.common.annotation.mark.Biz;
 import com.tollge.common.annotation.mark.Path;
-import com.tollge.common.annotation.valid.NotNull;
-import com.tollge.common.annotation.valid.NotNulls;
-import com.tollge.common.annotation.valid.RegexValid;
-import com.tollge.common.annotation.valid.RegexValids;
+import com.tollge.common.annotation.valid.*;
 import com.tollge.common.util.Const;
 import io.netty.util.internal.StringUtil;
 import io.vertx.core.AbstractVerticle;
@@ -33,6 +30,10 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+/**
+ * 业务逻辑抽象类
+ * @author tollge
+ */
 @Slf4j
 public class BizVerticle extends AbstractVerticle {
 
@@ -86,14 +87,18 @@ public class BizVerticle extends AbstractVerticle {
         boolean hasBody = body != null;
         for (Annotation annotation : m.getDeclaredAnnotations()) {
             // 校验
-            if (annotation instanceof NotNulls) {
-                validate(body, hasBody, (NotNulls) annotation);
-            } else if (annotation instanceof NotNull) {
+            if (annotation instanceof NotNull) {
                 validate(body, hasBody, (NotNull) annotation);
-            } else if (annotation instanceof RegexValids) {
-                validate(body, hasBody, (RegexValids) annotation);
+            } else if (annotation instanceof NotNulls) {
+                validate(body, hasBody, (NotNulls) annotation);
+            } else if (annotation instanceof LengthValid) {
+                validate(body, hasBody, (LengthValid) annotation);
+            } else if (annotation instanceof LengthValids) {
+                validate(body, hasBody, (LengthValids) annotation);
             } else if (annotation instanceof RegexValid) {
                 validate(body, hasBody, (RegexValid) annotation);
+            } else if (annotation instanceof RegexValids) {
+                validate(body, hasBody, (RegexValids) annotation);
             }
 
             if (hasBody) {
@@ -197,6 +202,30 @@ public class BizVerticle extends AbstractVerticle {
             Preconditions.checkArgument(!StringUtil.isNullOrEmpty(body.getString(n.key())), n.msg());
         } else {
             Preconditions.checkArgument(value != null, n.msg());
+        }
+    }
+
+    private void validate(JsonObject body, boolean hasBody, LengthValids ns) {
+        for (LengthValid n : ns.value()) {
+            validate(body, hasBody, n);
+        }
+    }
+
+    private void validate(JsonObject body, boolean hasBody, LengthValid n) {
+        Preconditions.checkArgument(hasBody, n.msg());
+        Object value = body.getValue(n.key());
+
+        int strLen = -1;
+        if (value instanceof String) {
+            strLen = body.getString(n.key()).length();
+        } else if (value instanceof JsonArray) {
+            strLen = body.getJsonArray(n.key()).size();
+        }
+        if(strLen == -1){
+            log.error("请查看是否错误的使用LengthValid with " + n.key());
+        } else {
+            Preconditions.checkArgument(n.min() == -1 || strLen >= n.min(), n.msg() + "," + n.key() + "的长度是" + strLen);
+            Preconditions.checkArgument(n.max() == -1 || strLen <= n.max(), n.msg() + "," + n.key() + "的长度是" + strLen);
         }
     }
 

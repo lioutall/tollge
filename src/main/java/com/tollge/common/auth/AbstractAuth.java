@@ -1,8 +1,10 @@
 package com.tollge.common.auth;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.net.MediaType;
 import com.tollge.common.ResultFormat;
 import com.tollge.common.StatusCodeMsg;
+import com.tollge.common.util.Const;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
@@ -73,7 +75,7 @@ public abstract class AbstractAuth {
      * @param ctx []
      */
     public void failAuthenticate(RoutingContext ctx) {
-        ctx.response().putHeader("content-type", "application/json").end(ResultFormat.format(StatusCodeMsg.C314, new JsonObject()));
+        ctx.response().putHeader("content-type", Const.DEFAULT_CONTENT_TYPE).end(ResultFormat.format(StatusCodeMsg.C314, new JsonObject()));
     }
 
     /**
@@ -81,6 +83,6 @@ public abstract class AbstractAuth {
      * @param ctx []
      */
     public void failLogin(RoutingContext ctx) {
-        ctx.response().putHeader("content-type", "application/json").end(ResultFormat.format(StatusCodeMsg.C300, new JsonObject()));
+        ctx.response().putHeader("content-type", Const.DEFAULT_CONTENT_TYPE).end(ResultFormat.format(StatusCodeMsg.C300, new JsonObject()));
     }
 }

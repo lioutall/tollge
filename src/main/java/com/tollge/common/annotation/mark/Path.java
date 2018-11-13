@@ -1,6 +1,7 @@
 package com.tollge.common.annotation.mark;
 
 import com.tollge.common.annotation.Method;
+import com.tollge.common.util.Const;
 
 import java.lang.annotation.*;
 
@@ -13,5 +14,5 @@ public @interface Path {
 
     Method method() default Method.ROUTE;
 
-    String contentType() default "application/json";
+    String contentType() default Const.DEFAULT_CONTENT_TYPE;
 }
