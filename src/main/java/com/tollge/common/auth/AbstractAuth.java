@@ -73,7 +73,7 @@ public abstract class AbstractAuth {
      * @param ctx []
      */
     public void failAuthenticate(RoutingContext ctx) {
-        ctx.response().end(ResultFormat.format(StatusCodeMsg.C314, new JsonObject()));
+        ctx.response().putHeader("content-type", "application/json").end(ResultFormat.format(StatusCodeMsg.C314, new JsonObject()));
     }
 
     /**
@@ -81,6 +81,6 @@ public abstract class AbstractAuth {
      * @param ctx []
      */
     public void failLogin(RoutingContext ctx) {
-        ctx.response().end(ResultFormat.format(StatusCodeMsg.C300, new JsonObject()));
+        ctx.response().putHeader("content-type", "application/json").end(ResultFormat.format(StatusCodeMsg.C300, new JsonObject()));
     }
 }
