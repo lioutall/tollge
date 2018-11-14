@@ -41,7 +41,6 @@ public class BizVerticle extends AbstractVerticle {
         if (res.succeeded()) {
             msg.reply(res.result().body());
         } else {
-            log.error("BizVerticle failed:{}", sqlAndParams, res.cause());
             if (res.cause() instanceof IllegalArgumentException) {
                 msg.fail(StatusCodeMsg.C414.getCode(), res.cause().getMessage());
             } else {
@@ -436,6 +435,14 @@ public class BizVerticle extends AbstractVerticle {
 
     private <T> void sendDB(String biz, Object obj, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
         vertx.eventBus().<T>send(biz, obj, deliveryOptions, replyHandler);
+    }
+
+    protected <T> void redirect(String biz, Object obj, Handler<AsyncResult<Message<T>>> replyHandler) {
+        redirect(biz, obj, new DeliveryOptions(), replyHandler);
+    }
+
+    private <T> void redirect(String biz, Object obj, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
+        vertx.eventBus().send(biz, obj, deliveryOptions, replyHandler);
     }
 
 }
