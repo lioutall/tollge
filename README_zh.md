@@ -55,9 +55,9 @@ public class HttpBiz extends BizVerticle {
 }
 ```
 5. annotation简化代码   
-目前提供两类注解
+目前提供两类注解   
 |注解类型|注解名|作用|参数|
-|--|--|--|--|
+|-|-|-|-|
 |校验|NotNull|空校验|key: 校验的关键字 msg:错误提示|
 |校验|RegexValid|正则校验|key: 校验的关键字 regex:表达式 msg:错误提示|
 |校验|LengthValid|长度校验,只能校验String和JsonArray|key: 校验的关键字 min:最小长度 max:最大长度 msg:错误提示|
