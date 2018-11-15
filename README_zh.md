@@ -56,6 +56,7 @@ public class HttpBiz extends BizVerticle {
 ```
 5. annotation简化代码   
 目前提供两类注解   
+
 |注解类型|注解名|作用|参数|
 |-|-|-|-|
 |校验|NotNull|空校验|key: 校验的关键字 msg:错误提示|
@@ -63,6 +64,7 @@ public class HttpBiz extends BizVerticle {
 |校验|LengthValid|长度校验,只能校验String和JsonArray|key: 校验的关键字 min:最小长度 max:最大长度 msg:错误提示|
 |数据改变|InitIfNull|如果key为空,则初始化|key: 关键字 value:初始化字段|
 |数据改变|ChangeType|改变数据类型|key: 关键字 from:从什么类型 to:变成什么类型|
+
 6. 对数据层封装   
 extends BizVerticle后, 你可以使用page, list, one, count等方法来大大简化代码.
 7. 多级缓存   
