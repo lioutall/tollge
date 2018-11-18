@@ -311,7 +311,7 @@ public class BizVerticle extends AbstractVerticle {
         list(sqlId, msg, append, bizResultHandler.apply(msg, new SqlAndParams(sqlId)));
     }
 
-    protected void list(String sqlId, Message<JsonObject> msg, JsonObject append, Handler<AsyncResult<Message<Object>>> replyHandler) {
+    protected <T> void list(String sqlId, Message<JsonObject> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
         SqlAndParams sqlAndParams = new SqlAndParams(sqlId);
         String daoId = AbstractDao.LIST;
         JsonObject o = msg.body();
