@@ -57,13 +57,15 @@ public class HttpBiz extends BizVerticle {
 ```
 5. Annotation simplified code   
 Currently providing two types of annotations   
+
 |annotation type|name|function|parameters|
-|-|-|-|
+|-|-|-|-|
 |check|NotNull|check null|key: key to check. msg:message to show|
 |check|RegexValid|regex check|key: key to check. regex:Regular expression. msg:message to show|
 |check|LengthValid|length check for String and JsonArray|key: key to check. min:xx max:xx msg:message to show|
 |change content|InitIfNull|Initialize if the key is empty|key: key to check. value:Initialize value|
 |change type|ChangeType|Change data type|key: key to check. from:from type. to:to type|
+
 6. Data layer call simplification   
 extends BizVerticle, You can greatly simplify the code by using methods such as page, list, one, count, etc..
 7. Multi-level cache   
