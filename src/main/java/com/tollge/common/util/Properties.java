@@ -5,10 +5,13 @@ import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,19 +36,39 @@ public class Properties {
             Yaml yaml = new Yaml();
             Map<String, Object> proMap = Maps.newHashMap();
 
-            // 先加载modules
-            Enumeration<URL> resources = null;
+            // 先加载modules中的配置
             try {
-                resources = Properties.class.getClassLoader().getResources("modules/tollge.yml");
+                String modulesDir = "modules";
+
+                Enumeration<URL> resources = Properties.class.getClassLoader().getResources(modulesDir);
                 if (resources != null) {
                     while (resources.hasMoreElements()) {
                         URL resource = resources.nextElement();
-                        Map<Object, Object> loadMap = (Map<Object, Object>) yaml.load(resource.openStream());
-                        proMap.putAll(flatRead("", loadMap));
+                        String modulesPath = resource.getPath();
+                        if(!modulesPath.contains("jar!")){
+                            continue;
+                        }
+
+                        String jarPath = modulesPath.substring(5, modulesPath.length() - modulesDir.length() - 2);
+
+                        try(JarFile jarFile = new JarFile(jarPath)) {
+                            Enumeration<JarEntry> dd = jarFile.entries();
+                            while (dd.hasMoreElements()) {
+                                JarEntry entry = dd.nextElement();
+                                if (!entry.isDirectory() && entry.getName().startsWith(modulesDir + "/tollge-") && entry.getName().endsWith("yml")) {
+                                    log.debug("遍历yml文件:{}", entry.getName());
+                                    try (InputStream fileIS = jarFile.getInputStream(entry)) {
+                                        Map<Object, Object> loadMap = (Map<Object, Object>) yaml.load(fileIS);
+                                        proMap.putAll(flatRead("", loadMap));
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+
             } catch (IOException e) {
-                log.error("加载modules/tollge.yml失败", e);
+                log.error("加载modules/tollge-x.yml失败", e);
             }
 
             // 后加载当前项目, 如有相同则覆盖

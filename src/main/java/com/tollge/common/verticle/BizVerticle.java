@@ -240,7 +240,7 @@ public class BizVerticle extends AbstractVerticle {
         if (value instanceof String) {
             String v = body.getString(n.key());
             Preconditions.checkArgument(v != null
-                    && v.matches(body.getString(n.regex())), n.msg());
+                    && v.matches(n.regex()), n.msg());
         } else {
             throw new IllegalArgumentException(n.key() + "is not string");
         }
