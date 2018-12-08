@@ -123,6 +123,14 @@ public class Properties {
         return (String) o;
     }
 
+    public static Boolean getBoolean(String group, String key) {
+        Object o = Singleton.INSTANCE.getInstance().pros.get(group + "." + key);
+        if(o == null) {
+            return null;
+        }
+        return (Boolean) o;
+    }
+
     public static Integer getInteger(String group, String key) {
         Object o = Singleton.INSTANCE.getInstance().pros.get(group + "." + key);
         if(o == null) {
