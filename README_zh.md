@@ -34,7 +34,9 @@ tollge提供基础规范, 由于基于vertx, 请先了解下vertx的基础知识
 第一步加载moudules/tollge.yml, 把所有配置加载成 `<String, String>`的map   
 后加载覆盖先加载的, 最后加载用户project中的tollge.yml
 3. verticle服务发布   
-你可以在tollge.yml里添加`verticles.xxx: com.xxx.xxx.xxVerticle`来deploy verticle.
+你可以在tollge.yml里添加`verticles.xxx: com.xxx.xxx.xxVerticle`来deploy verticle.   
+你也可以定义需要deploy的实例个数. 比如, `verticles.xxx: com.xxx.xxx.xxVerticle,10` deploy 10个xxVerticle实例.   
+Tollge 除了直接使用数字外,另外定义了两个关键字, `ALL` 和 `HALF`. `HALF`是CPU可用核心数的一半.
 4. Biz group自动发现   
 默认加载package为`com.tollge.modules.**`下的所有Biz   
 可以通过在tollge.yml里添加`application.baseScan: com.xxx` 来加载`com.xxx`包下的所有Biz   

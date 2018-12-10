@@ -35,7 +35,9 @@ Use `MyVertx.vertx()` to get `Vertx` object.
 The first step is to load all moudules/tollge.yml and the configuration will save in a map of `<String, String>`   
 The same key will be overwritten, the tollge.yml in the user project will be loaded at last.
 3. deploy verticle   
-You can add `verticles.xxx: com.xxx.xxx.xxVerticle` in tollge.yml to deploy verticle.
+You can add `verticles.xxx: com.xxx.xxx.xxVerticle` in tollge.yml to deploy verticle.   
+Define the number of instances that need to be deployed. For example, `verticles.xxxx: com.xxxx.xxxx.xxxVerticle, 10`deploy 10 xxxVerticle instances.   
+In addition to using numbers directly, Tollge defines two keywords, `ALL'and `HALF'. `HALF' are half the number of CPU cores available.
 4. Biz discovery   
 Default to load all Biz under package `com.tollge.modules.**`   
 You can load all Biz under the `com.xxx` package by adding `application.baseScan: com.xxx` to tollge.yml.   
