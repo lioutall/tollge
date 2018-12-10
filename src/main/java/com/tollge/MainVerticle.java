@@ -7,6 +7,7 @@ import com.tollge.common.util.ReflectionUtil;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
+import io.vertx.core.impl.cpu.CpuCoreSensor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -35,7 +36,26 @@ public class MainVerticle extends AbstractVerticle {
             future = future.compose(res -> Future.future(dao -> {
                 String value = (String) entry.getValue();
                 log.debug("启动[{}]...", value);
-                vertx.deployVerticle(value, dao);
+                // 如果带了instance值, 则按规则启动
+                int commaIndex = value.indexOf(",");
+                if(commaIndex > -1) {
+                    String verticleName = value.substring(0, commaIndex);
+                    String instanceStr = value.substring(commaIndex+1);
+                    if("HALF".equals(instanceStr)) {
+                        double cupCoresNum = (double) CpuCoreSensor.availableProcessors();
+                        vertx.deployVerticle(verticleName, new DeploymentOptions().setInstances((int) Math.ceil(cupCoresNum / 2)), dao);
+                    } else if("ALL".equals(instanceStr)) {
+                        vertx.deployVerticle(verticleName, new DeploymentOptions().setInstances(CpuCoreSensor.availableProcessors()), dao);
+                    } else {
+                        if(instanceStr.matches("\\d+")) {
+                            vertx.deployVerticle(verticleName, new DeploymentOptions().setInstances(Integer.valueOf(instanceStr)), dao);
+                        } else {
+                            vertx.deployVerticle(value, dao);
+                        }
+                    }
+                } else {
+                    vertx.deployVerticle(value, dao);
+                }
             }));
         }
 
