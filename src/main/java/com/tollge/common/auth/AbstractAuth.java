@@ -85,4 +85,11 @@ public abstract class AbstractAuth {
     public void failLogin(RoutingContext ctx) {
         ctx.response().putHeader("content-type", Const.DEFAULT_CONTENT_TYPE).end(ResultFormat.format(StatusCodeMsg.C300, new JsonObject()));
     }
+
+    /**
+     * 踢出关键字的用户
+     * @param key
+     * @param resultHandler
+     */
+    public abstract void kickUser(String key, Handler<AsyncResult<Boolean>> resultHandler);
 }

@@ -43,6 +43,12 @@ public class SqlAndParams {
 
         limit = pageSize == null ? 20 : pageSize;
         offset = (currentPage == null ? 1 : currentPage - 1) * limit;
+        if (offset < 0) {
+            offset = 0;
+        }
+        if (limit < 0) {
+            limit = 20;
+        }
     }
 
     public SqlAndParams putParam(String key, Object value) {

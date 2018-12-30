@@ -119,4 +119,8 @@ public class Subject {
     public void storeCurrentSubject(RoutingContext rct) {
         rct.put(SUBJECT_STORE, this);
     }
+
+    public void kickUser(String key, Handler<AsyncResult<Boolean>> resultHandler) {
+        authCustom.kickUser(key, resultHandler);
+    }
 }
