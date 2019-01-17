@@ -58,7 +58,7 @@ public class HttpBiz extends BizVerticle {
 }
 ```
 5. Annotation simplified code   
-Currently providing two types of annotations   
+Currently providing types of annotations below   
 
 |annotation type|name|function|parameters|
 |-|-|-|-|
