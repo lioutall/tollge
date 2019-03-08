@@ -1,5 +1,5 @@
 group 'com.tollge'
-version '0.1.0-SNAPSHOT'
+version '0.1.1'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -56,9 +56,6 @@ dependencies {
     testCompile group: 'io.vertx', name: 'vertx-unit', version: '3.5.0'
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.8'
-}
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
