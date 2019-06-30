@@ -159,10 +159,10 @@ public class BizVerticle extends AbstractVerticle {
                 case DOUBLE:
                     switch (t.from()) {
                         case STRING:
-                            body.put(t.key(), new Double(body.getString(t.key())));
+                            body.put(t.key(), Double.valueOf(body.getString(t.key())));
                             break;
                         case INTEGER:
-                            body.put(t.key(), new Double(body.getInteger(t.key())));
+                            body.put(t.key(), Double.valueOf(body.getInteger(t.key())));
                             break;
                         default:
                             break;
@@ -175,8 +175,7 @@ public class BizVerticle extends AbstractVerticle {
     }
 
     private void init(JsonObject body, InitIfNulls annotation) {
-        InitIfNulls initIfNulls = annotation;
-        InitIfNull[] is = initIfNulls.value();
+        InitIfNull[] is = annotation.value();
         for (InitIfNull i1 : is) {
             init(body, i1);
         }

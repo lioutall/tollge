@@ -5,8 +5,8 @@ import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
-import java.net.URISyntaxException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Map;
@@ -23,6 +23,7 @@ public class Properties {
         return Singleton.INSTANCE.getInstance();
     }
 
+    @SuppressWarnings("unchecked")
     private enum Singleton {
         /**
          * 单例
