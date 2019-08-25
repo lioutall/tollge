@@ -7,6 +7,7 @@ import com.tollge.common.util.ReflectionUtil;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.impl.cpu.CpuCoreSensor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +21,7 @@ import java.util.Set;
 public class MainVerticle extends AbstractVerticle {
 
     @Override
-    public void start(Future<Void> fut) {
+    public void start(Promise<Void> fut) {
         // 全局化
         MyVertx.vertx(vertx);
 

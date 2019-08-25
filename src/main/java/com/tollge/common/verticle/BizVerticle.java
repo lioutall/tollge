@@ -433,7 +433,7 @@ public class BizVerticle extends AbstractVerticle {
     }
 
     private <T> void sendDB(String biz, Object obj, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
-        vertx.eventBus().<T>send(biz, obj, deliveryOptions, replyHandler);
+        vertx.eventBus().<T>request(biz, obj, deliveryOptions, replyHandler);
     }
 
     protected <T> void redirect(String biz, Object obj, Handler<AsyncResult<Message<T>>> replyHandler) {
@@ -441,7 +441,7 @@ public class BizVerticle extends AbstractVerticle {
     }
 
     private <T> void redirect(String biz, Object obj, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
-        vertx.eventBus().send(biz, obj, deliveryOptions, replyHandler);
+        vertx.eventBus().request(biz, obj, deliveryOptions, replyHandler);
     }
 
 }

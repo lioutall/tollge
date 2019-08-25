@@ -64,7 +64,7 @@ public abstract class AbstractRouter {
     }
 
     private <T> void sendBiz(String biz, JsonObject jo, RoutingContext rct, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
-        rct.vertx().eventBus().<T>send(biz, jo, deliveryOptions, replyHandler);
+        rct.vertx().eventBus().<T>request(biz, jo, deliveryOptions, replyHandler);
     }
 
     protected void sendBizWithUser(String biz, RoutingContext rct) {

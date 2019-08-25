@@ -1,5 +1,5 @@
 group 'com.tollge'
-version '0.1.2'
+version '0.2.1'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -20,7 +20,7 @@ repositories {
     maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
 }
 
-project.ext.vertx_version = "3.7.1"
+project.ext.vertx_version = "3.8.1"
 project.ext.jetcache_version = "2.5.13"
 
 dependencies {
