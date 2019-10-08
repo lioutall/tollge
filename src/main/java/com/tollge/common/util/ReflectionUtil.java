@@ -18,7 +18,7 @@ public class ReflectionUtil {
 
     private ReflectionUtil(){}
 
-    private static String packages = Properties.getString("application", "baseScan");
+    private static String packages = Properties.getString("application", "baseScan", "-nowhere-");
 
     public static Set<Method> getMethodsWithAnnotated(Class<? extends Annotation> annotation) {
         Reflections reflections = new Reflections(
