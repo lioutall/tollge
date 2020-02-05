@@ -10,8 +10,11 @@ import io.vertx.core.Future;
 import io.vertx.core.impl.cpu.CpuCoreSensor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 启动入口
@@ -31,7 +34,8 @@ public class MainVerticle extends AbstractVerticle {
 
         // 启动模块verticle
         Map<String, Object> verticles = Properties.getGroup("verticles");
-        Set<Map.Entry<String, Object>> list = verticles.entrySet();
+        List<Map.Entry<String, Object>> list = verticles.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toList());
+
         for (Map.Entry<String, Object> entry : list) {
             future = future.compose(res -> Future.future(dao -> {
                 String value = (String) entry.getValue();
