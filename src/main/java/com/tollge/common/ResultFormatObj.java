@@ -16,7 +16,7 @@ public class ResultFormatObj {
     /**
      * 信息
      */
-    private String msg;
+    private String message;
     /**
      * 数据
      */
@@ -26,10 +26,10 @@ public class ResultFormatObj {
         return Json.encode(this);
     }
 
-    public ResultFormatObj(boolean success, int status, String msg, Object data) {
+    public ResultFormatObj(boolean success, int status, String message, Object data) {
         super();
         this.success = success;
-        this.msg = msg;
+        this.message = message;
         this.code = status;
         this.data = data;
     }
