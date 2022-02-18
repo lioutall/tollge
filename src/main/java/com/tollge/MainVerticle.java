@@ -84,7 +84,7 @@ public class MainVerticle extends AbstractVerticle {
             }));
         }
 
-        future.setHandler(res -> {
+        future.onComplete(res -> {
             if (res.succeeded()) {
                 log.info("启动完成...");
                 fut.complete();

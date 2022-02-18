@@ -1,7 +1,6 @@
 package com.tollge.common.auth;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.net.MediaType;
 import com.tollge.common.ResultFormat;
 import com.tollge.common.StatusCodeMsg;
 import com.tollge.common.util.Const;
