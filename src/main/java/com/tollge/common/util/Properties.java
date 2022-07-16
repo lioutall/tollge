@@ -30,7 +30,7 @@ public class Properties {
          */
         INSTANCE;
 
-        private Properties single;
+        private final Properties single;
 
         private Singleton() {
             single = new Properties();
@@ -59,7 +59,7 @@ public class Properties {
                                 if (!entry.isDirectory() && entry.getName().startsWith(modulesDir + "/tollge-") && entry.getName().endsWith("yml")) {
                                     log.debug("遍历yml文件:{}", entry.getName());
                                     try (InputStream fileIS = jarFile.getInputStream(entry)) {
-                                        Map<Object, Object> loadMap = (Map<Object, Object>) yaml.load(fileIS);
+                                        Map<Object, Object> loadMap = yaml.load(fileIS);
                                         proMap.putAll(flatRead("", loadMap));
                                     }
                                 }
@@ -73,7 +73,7 @@ public class Properties {
             }
 
             // 后加载当前项目, 如有相同则覆盖
-            Map<Object, Object> loadMap = (Map<Object, Object>) yaml.load(this.getClass().getClassLoader().getResourceAsStream("tollge.yml"));
+            Map<Object, Object> loadMap = yaml.load(this.getClass().getClassLoader().getResourceAsStream("tollge.yml"));
             proMap.putAll(flatRead("", loadMap));
 
             single.pros = proMap;

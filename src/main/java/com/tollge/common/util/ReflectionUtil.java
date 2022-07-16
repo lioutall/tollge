@@ -1,7 +1,7 @@
 package com.tollge.common.util;
 
 import org.reflections.Reflections;
-import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
@@ -18,27 +18,27 @@ public class ReflectionUtil {
 
     private ReflectionUtil(){}
 
-    private static String packages = Properties.getString("application", "baseScan", "-nowhere-");
+    private static final String PACKAGES = Properties.getString("application", "baseScan", "-nowhere-");
 
     public static Set<Method> getMethodsWithAnnotated(Class<? extends Annotation> annotation) {
         Reflections reflections = new Reflections(
-                new ConfigurationBuilder().forPackages(packages, TOLLGE_MODULES)
-                        .filterInputsBy(new FilterBuilder().includePackage(packages, TOLLGE_MODULES))
-                        .addScanners(new MethodAnnotationsScanner()));
+                new ConfigurationBuilder().forPackages(PACKAGES, TOLLGE_MODULES)
+                        .filterInputsBy(new FilterBuilder().includePackage(PACKAGES).includePackage(TOLLGE_MODULES))
+                        .addScanners(Scanners.ConstructorsAnnotated));
         return reflections.getMethodsAnnotatedWith(annotation);
     }
 
     public static Set<Class<?>> getClassesWithAnnotated(Class<? extends Annotation> annotation) {
         Reflections reflections = new Reflections(
-                new ConfigurationBuilder().forPackages(packages, TOLLGE_MODULES)
-                        .filterInputsBy(new FilterBuilder().includePackage(packages, TOLLGE_MODULES)));
+                new ConfigurationBuilder().forPackages(PACKAGES, TOLLGE_MODULES)
+                        .filterInputsBy(new FilterBuilder().includePackage(PACKAGES).includePackage(TOLLGE_MODULES)));
         return reflections.getTypesAnnotatedWith(annotation);
     }
 
     public static <T> Set<Class<? extends T>> getSubTypesOf(final Class<T> type) {
         Reflections reflections = new Reflections(
-                new ConfigurationBuilder().forPackages(packages, TOLLGE_MODULES)
-                        .filterInputsBy(new FilterBuilder().includePackage(packages, TOLLGE_MODULES)));
+                new ConfigurationBuilder().forPackages(PACKAGES, TOLLGE_MODULES)
+                        .filterInputsBy(new FilterBuilder().includePackage(PACKAGES).includePackage(TOLLGE_MODULES)));
         return reflections.getSubTypesOf(type);
     }
 }
