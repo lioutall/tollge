@@ -15,4 +15,6 @@ public @interface Path {
     Method method() default Method.ROUTE;
 
     String contentType() default Const.DEFAULT_CONTENT_TYPE;
+
+    String description() default "";
 }

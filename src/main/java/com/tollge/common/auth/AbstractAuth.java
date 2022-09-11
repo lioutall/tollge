@@ -35,6 +35,12 @@ public abstract class AbstractAuth {
     public abstract void removeSubject(String key, Handler<AsyncResult<Void>> resultHandler);
 
     /**
+     * 刷新时间
+     * @param key []
+     */
+    public abstract void refreshTime(String key);
+
+    /**
      * 定时清除缓存
      * 需要定时器,返回true
      * @return 操作结果

@@ -94,7 +94,7 @@ public enum StatusCodeMsg {
 				return value;
 			}
 		}
-		return StatusCodeMsg.C1500;
+		return C1500;
 	}
 
 }

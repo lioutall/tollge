@@ -17,8 +17,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResultFormat {
 
-    private static final String CODE = "code";
-    private static final String SUCCESS = "success";
+    public static final String CODE = "code";
+    public static final String SUCCESS = "success";
     public static final String MESSAGE = "message";
     public static final String DATA = "data";
 
