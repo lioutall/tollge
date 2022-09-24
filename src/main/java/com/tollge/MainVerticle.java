@@ -7,11 +7,15 @@ import com.tollge.common.util.ReflectionUtil;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.impl.cpu.CpuCoreSensor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 启动入口
@@ -20,7 +24,7 @@ import java.util.Set;
 public class MainVerticle extends AbstractVerticle {
 
     @Override
-    public void start(Future<Void> fut) {
+    public void start(Promise<Void> fut) {
         // 全局化
         MyVertx.vertx(vertx);
 
@@ -31,7 +35,8 @@ public class MainVerticle extends AbstractVerticle {
 
         // 启动模块verticle
         Map<String, Object> verticles = Properties.getGroup("verticles");
-        Set<Map.Entry<String, Object>> list = verticles.entrySet();
+        List<Map.Entry<String, Object>> list = verticles.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toList());
+
         for (Map.Entry<String, Object> entry : list) {
             future = future.compose(res -> Future.future(dao -> {
                 String value = (String) entry.getValue();
@@ -79,7 +84,7 @@ public class MainVerticle extends AbstractVerticle {
             }));
         }
 
-        future.setHandler(res -> {
+        future.onComplete(res -> {
             if (res.succeeded()) {
                 log.info("启动完成...");
                 fut.complete();

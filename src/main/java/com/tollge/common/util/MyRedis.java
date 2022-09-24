@@ -5,11 +5,11 @@ import io.lettuce.core.RedisURI;
 
 import java.time.Duration;
 
-class MyRedis {
+public class MyRedis {
         private MyRedis() {
         }
 
-        static RedisClient getClient() {
+        public static RedisClient getClient() {
             return Singleton.INSTANCE.getInstance().client;
         }
 

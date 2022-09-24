@@ -17,8 +17,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResultFormat {
 
-    private static final String CODE = "code";
-    private static final String SUCCESS = "success";
+    public static final String CODE = "code";
+    public static final String SUCCESS = "success";
+    public static final String MESSAGE = "message";
+    public static final String DATA = "data";
 
     /**
      * 格式化返回结果,code为状态码枚举类,data为数据
@@ -76,8 +78,8 @@ public class ResultFormat {
         JsonObject result = new JsonObject();
         result.put(SUCCESS, StatusCodeMsg.C200.equals(code));
         result.put(CODE, code.getCode());
-        result.put("msg", code.getMsg());
-        result.put("data", data);
+        result.put(MESSAGE, code.getMsg());
+        result.put(DATA, data);
         return result.toString();
     }
 
@@ -85,7 +87,7 @@ public class ResultFormat {
         JsonObject result = new JsonObject();
         result.put(SUCCESS, StatusCodeMsg.C200.equals(code));
         result.put(CODE, code.getCode());
-        result.put("msg", code.getMsg());
+        result.put(MESSAGE, code.getMsg());
         return result.toString();
     }
 
@@ -104,7 +106,7 @@ public class ResultFormat {
         JsonObject result = new JsonObject();
         result.put(SUCCESS, StatusCodeMsg.C200.equals(code));
         result.put(CODE, code.getCode());
-        result.put("msg", message);
+        result.put(MESSAGE, message);
         return result.toString();
     }
 }

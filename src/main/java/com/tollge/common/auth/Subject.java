@@ -26,6 +26,7 @@ public class Subject {
 
     public void refreshTime(LocalDateTime time) {
         this.time = time;
+        authCustom.refreshTime(sessionID);
     }
 
     private String sessionID;

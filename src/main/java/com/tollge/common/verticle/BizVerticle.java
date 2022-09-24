@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BizVerticle extends AbstractVerticle {
 
-    private final BiFunction<Message<JsonObject>, SqlAndParams, Handler<AsyncResult<Message<Object>>>> bizResultHandler = (msg, sqlAndParams) -> res -> {
+    private final BiFunction<Message<?>, SqlAndParams, Handler<AsyncResult<Message<Object>>>> bizResultHandler = (msg, sqlAndParams) -> res -> {
         if (res.succeeded()) {
             msg.reply(res.result().body());
         } else {
@@ -59,10 +59,10 @@ public class BizVerticle extends AbstractVerticle {
             }
             String path = this.getClass().getAnnotation(Biz.class).value() + pathMark.value();
             int methodIndex = access.getIndex(m.getName());
-            vertx.eventBus().<JsonObject>consumer(path, msg -> {
+            vertx.eventBus().consumer(path, msg -> {
                 try {
                     // 业务前校验和初始化
-                    validateAndInit(m, msg);
+                    // validateAndInit(m, msg);
                     // 最终调用
                     access.invoke(this, methodIndex, msg);
                 } catch (IllegalArgumentException e) {
@@ -159,10 +159,10 @@ public class BizVerticle extends AbstractVerticle {
                 case DOUBLE:
                     switch (t.from()) {
                         case STRING:
-                            body.put(t.key(), new Double(body.getString(t.key())));
+                            body.put(t.key(), Double.valueOf(body.getString(t.key())));
                             break;
                         case INTEGER:
-                            body.put(t.key(), new Double(body.getInteger(t.key())));
+                            body.put(t.key(), Double.valueOf(body.getInteger(t.key())));
                             break;
                         default:
                             break;
@@ -175,8 +175,7 @@ public class BizVerticle extends AbstractVerticle {
     }
 
     private void init(JsonObject body, InitIfNulls annotation) {
-        InitIfNulls initIfNulls = annotation;
-        InitIfNull[] is = initIfNulls.value();
+        InitIfNull[] is = annotation.value();
         for (InitIfNull i1 : is) {
             init(body, i1);
         }
@@ -252,23 +251,29 @@ public class BizVerticle extends AbstractVerticle {
      * @param msg []
      * @param sqlAndParams []
      */
-    protected void one(Message<JsonObject> msg, SqlAndParams sqlAndParams) {
+    protected void one(Message<?> msg, SqlAndParams sqlAndParams) {
         sendDB(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
     }
 
-    protected void one(String sqlId, Message<JsonObject> msg, JsonObject append) {
+    protected void one(String sqlId, Message<?> msg, JsonObject append) {
         SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
         sendDB(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
     }
 
-    protected <T> void one(String sqlId, Message<JsonObject> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
+    protected <T> void one(String sqlId, Message<?> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
         SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
         sendDB(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), replyHandler);
     }
 
-    private SqlAndParams generateSqlAndParams(String sqlId, Message<JsonObject> msg, JsonObject append) {
+    private SqlAndParams generateSqlAndParams(String sqlId, Message<?> msg, JsonObject append) {
         SqlAndParams sqlAndParams = new SqlAndParams(sqlId);
-        JsonObject o = msg.body();
+        Object body = msg.body();
+        JsonObject o = null;
+        if (body instanceof JsonObject) {
+            o = (JsonObject)body;
+        } else {
+            o = JsonObject.mapFrom(body);
+        }
         if (o != null && o.size() > 0) {
             o.forEach(entry -> sqlAndParams.putParam(entry.getKey(), entry.getValue()));
         }
@@ -279,16 +284,16 @@ public class BizVerticle extends AbstractVerticle {
         return sqlAndParams;
     }
 
-    protected void count(Message<JsonObject> msg, SqlAndParams sqlAndParams) {
+    protected void count(Message<?> msg, SqlAndParams sqlAndParams) {
         sendDB(AbstractDao.COUNT, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
     }
 
-    protected void count(String sqlId, Message<JsonObject> msg, JsonObject append) {
+    protected void count(String sqlId, Message<?> msg, JsonObject append) {
         SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
         sendDB(AbstractDao.COUNT, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
     }
 
-    protected <T> void count(String sqlId, Message<JsonObject> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
+    protected <T> void count(String sqlId, Message<?> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
         SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
         sendDB(AbstractDao.COUNT, JsonObject.mapFrom(sqlAndParams), replyHandler);
     }
@@ -299,22 +304,28 @@ public class BizVerticle extends AbstractVerticle {
      * @param msg []
      * @param sqlAndParams []
      */
-    protected void list(Message<JsonObject> msg, SqlAndParams sqlAndParams) {
+    protected void list(Message<?> msg, SqlAndParams sqlAndParams) {
         sendDB(AbstractDao.LIST, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
     }
 
-    protected void page(Message<JsonObject> msg, SqlAndParams sqlAndParams) {
+    protected void page(Message<?> msg, SqlAndParams sqlAndParams) {
         sendDB(AbstractDao.PAGE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
     }
 
-    protected void list(String sqlId, Message<JsonObject> msg, JsonObject append) {
+    protected void list(String sqlId, Message<?> msg, JsonObject append) {
         list(sqlId, msg, append, bizResultHandler.apply(msg, new SqlAndParams(sqlId)));
     }
 
-    protected <T> void list(String sqlId, Message<JsonObject> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
+    protected <T> void list(String sqlId, Message<?> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
         SqlAndParams sqlAndParams = new SqlAndParams(sqlId);
         String daoId = AbstractDao.LIST;
-        JsonObject o = msg.body();
+        Object body = msg.body();
+        JsonObject o = null;
+        if (body instanceof JsonObject) {
+            o = (JsonObject)body;
+        } else {
+            o = JsonObject.mapFrom(body);
+        }
         if (o != null && o.size() > 0) {
             // 如果是分页
             if (o.containsKey("currentPage") && o.containsKey("pageSize")) {
@@ -339,21 +350,21 @@ public class BizVerticle extends AbstractVerticle {
         sendDB(daoId, JsonObject.mapFrom(sqlAndParams), replyHandler);
     }
 
-    protected void operate(Message<JsonObject> msg, SqlAndParams sqlAndParams) {
+    protected void operate(Message<?> msg, SqlAndParams sqlAndParams) {
         sendDB(AbstractDao.OPERATE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
     }
 
-    protected void operate(String sqlId, Message<JsonObject> msg, JsonObject append) {
+    protected void operate(String sqlId, Message<?> msg, JsonObject append) {
         SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
         sendDB(AbstractDao.OPERATE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
     }
 
-    protected <T> void operate(String sqlId, Message<JsonObject> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
+    protected <T> void operate(String sqlId, Message<?> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
         SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
         sendDB(AbstractDao.OPERATE, JsonObject.mapFrom(sqlAndParams), replyHandler);
     }
 
-    protected void batch(Message<JsonObject> msg, List<SqlAndParams> sqlAndParamsList) {
+    protected void batch(Message<?> msg, List<SqlAndParams> sqlAndParamsList) {
         validateSqlAndParam(sqlAndParamsList);
         sendDB(AbstractDao.BATCH, new JsonArray(sqlAndParamsList), bizResultHandler.apply(msg, sqlAndParamsList.get(0)));
     }
@@ -376,7 +387,7 @@ public class BizVerticle extends AbstractVerticle {
      * @param msg []
      * @param sqlAndParamsList []
      */
-    protected void transaction(Message<JsonObject> msg, List<SqlAndParams> sqlAndParamsList) {
+    protected void transaction(Message<?> msg, List<SqlAndParams> sqlAndParamsList) {
         validateSqlAndParam(sqlAndParamsList);
         sendDB(AbstractDao.TRANSACTION,
                 new JsonArray(sqlAndParamsList.stream().map(JsonObject::mapFrom).collect(Collectors.toList())),
@@ -406,7 +417,7 @@ public class BizVerticle extends AbstractVerticle {
      * @param msg []
      * @param sqlAndParamsList []
      */
-    protected void transactionIgnoreDealNum(Message<JsonObject> msg, List<SqlAndParams> sqlAndParamsList) {
+    protected void transactionIgnoreDealNum(Message<?> msg, List<SqlAndParams> sqlAndParamsList) {
         validateSqlAndParam(sqlAndParamsList);
         sendDB(AbstractDao.TRANSACTION,
                 new JsonArray(sqlAndParamsList.stream().map(JsonObject::mapFrom).collect(Collectors.toList())),
@@ -434,7 +445,7 @@ public class BizVerticle extends AbstractVerticle {
     }
 
     private <T> void sendDB(String biz, Object obj, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
-        vertx.eventBus().<T>send(biz, obj, deliveryOptions, replyHandler);
+        vertx.eventBus().<T>request(biz, obj, deliveryOptions, replyHandler);
     }
 
     protected <T> void redirect(String biz, Object obj, Handler<AsyncResult<Message<T>>> replyHandler) {
@@ -442,7 +453,7 @@ public class BizVerticle extends AbstractVerticle {
     }
 
     private <T> void redirect(String biz, Object obj, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
-        vertx.eventBus().send(biz, obj, deliveryOptions, replyHandler);
+        vertx.eventBus().request(biz, obj, deliveryOptions, replyHandler);
     }
 
 }
