@@ -25,7 +25,7 @@ public class UFailureHandler {
 		} else if (rct.failure() instanceof RuntimeException) {
 			result = ResultFormat.formatAsNull(StatusCodeMsg.C500);
 		} else {
-			result = ResultFormat.formatAsNull(StatusCodeMsg.C1500);
+			result = ResultFormat.formatAsNull(StatusCodeMsg.C530);
 		}
 		rct.response().end(result);
 	}
