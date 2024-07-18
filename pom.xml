@@ -6,7 +6,7 @@
 
     <groupId>com.tollge</groupId>
     <artifactId>tollge</artifactId>
-    <version>0.10.0</version>
+    <version>0.10.1</version>
     <build>
         <plugins>
             <plugin>
