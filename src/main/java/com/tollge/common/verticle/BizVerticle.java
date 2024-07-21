@@ -2,6 +2,8 @@ package com.tollge.common.verticle;
 
 import com.esotericsoftware.reflectasm.MethodAccess;
 import com.google.common.base.Preconditions;
+import com.tollge.common.BaseDo;
+import com.tollge.common.Page;
 import com.tollge.common.SqlAndParams;
 import com.tollge.common.StatusCodeMsg;
 import com.tollge.common.annotation.data.ChangeType;
@@ -18,6 +20,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+
+import static com.tollge.common.BaseConstants.RETURN_CLASS_TYPE;
 
 /**
  * 业务逻辑抽象类
@@ -247,22 +252,29 @@ public class BizVerticle extends AbstractVerticle {
 
     /**********************
      *  以下是sql方法封装, 便于使用
-
      * @param msg []
      * @param sqlAndParams []
      */
     protected void one(Message<?> msg, SqlAndParams sqlAndParams) {
-        sendDB(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
+        sendDB(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams), null);
     }
 
     protected void one(String sqlId, Message<?> msg, JsonObject append) {
         SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
-        sendDB(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
+        sendDB(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams), null);
     }
 
-    protected <T> void one(String sqlId, Message<?> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
+    protected void one(String sqlId, Message<?> msg, BaseDo query) {
+        one(sqlId, msg, new JsonObject(Json. encode(query)));
+    }
+
+    protected <T> void one(String sqlId, Message<?> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
         SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
-        sendDB(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), replyHandler);
+        sendDB(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), replyHandler, cls);
+    }
+
+    protected <T> void one(String sqlId, Message<?> msg, BaseDo query, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
+        one(sqlId, msg, new JsonObject(Json. encode(query)), replyHandler, cls);
     }
 
     private SqlAndParams generateSqlAndParams(String sqlId, Message<?> msg, JsonObject append) {
@@ -274,49 +286,65 @@ public class BizVerticle extends AbstractVerticle {
         } else {
             o = JsonObject.mapFrom(body);
         }
-        if (o != null && o.size() > 0) {
+        if (o != null && !o.isEmpty()) {
             o.forEach(entry -> sqlAndParams.putParam(entry.getKey(), entry.getValue()));
         }
 
-        if (append != null && append.size() > 0) {
+        if (append != null && !append.isEmpty()) {
             append.forEach(entry -> sqlAndParams.putParam(entry.getKey(), entry.getValue()));
         }
         return sqlAndParams;
     }
 
     protected void count(Message<?> msg, SqlAndParams sqlAndParams) {
-        sendDB(AbstractDao.COUNT, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
+        sendDB(AbstractDao.COUNT, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams), Long.class);
     }
 
     protected void count(String sqlId, Message<?> msg, JsonObject append) {
         SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
-        sendDB(AbstractDao.COUNT, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
+        sendDB(AbstractDao.COUNT, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams), Long.class);
+    }
+
+    protected void count(String sqlId, Message<?> msg, BaseDo query) {
+        count(sqlId, msg, new JsonObject(Json.encode(query)));
     }
 
     protected <T> void count(String sqlId, Message<?> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
         SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
-        sendDB(AbstractDao.COUNT, JsonObject.mapFrom(sqlAndParams), replyHandler);
+        sendDB(AbstractDao.COUNT, JsonObject.mapFrom(sqlAndParams), replyHandler, Long.class);
+    }
+
+    protected <T> void count(String sqlId, Message<?> msg, BaseDo query, Handler<AsyncResult<Message<T>>> replyHandler) {
+        count(sqlId, msg, new JsonObject(Json.encode(query)), replyHandler);
     }
 
     /**
      * 传了分页参数, 就走分页流程
      *
-     * @param msg []
+     * @param msg          []
      * @param sqlAndParams []
      */
-    protected void list(Message<?> msg, SqlAndParams sqlAndParams) {
-        sendDB(AbstractDao.LIST, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
+    protected <T> void list(Message<?> msg, SqlAndParams sqlAndParams) {
+        sendDB(AbstractDao.LIST, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams), null);
     }
 
-    protected void page(Message<?> msg, SqlAndParams sqlAndParams) {
-        sendDB(AbstractDao.PAGE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
+    protected <T> void page(Message<Page<?>> msg, SqlAndParams sqlAndParams, Class<T> cls) {
+        sendDB(AbstractDao.PAGE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams), cls);
     }
 
     protected void list(String sqlId, Message<?> msg, JsonObject append) {
-        list(sqlId, msg, append, bizResultHandler.apply(msg, new SqlAndParams(sqlId)));
+        list(sqlId, msg, append, bizResultHandler.apply(msg, new SqlAndParams(sqlId)), null);
     }
 
-    protected <T> void list(String sqlId, Message<?> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
+    protected void list(String sqlId, Message<?> msg, BaseDo query) {
+        list(sqlId, msg, new JsonObject(Json. encode(query)), bizResultHandler.apply(msg, new SqlAndParams(sqlId)), null);
+    }
+
+    protected <T> void list(String sqlId, Message<?> msg, BaseDo query, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
+        list(sqlId, msg, new JsonObject(Json. encode(query)), replyHandler, cls);
+    }
+
+    protected <T> void list(String sqlId, Message<?> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
         SqlAndParams sqlAndParams = new SqlAndParams(sqlId);
         String daoId = AbstractDao.LIST;
         Object body = msg.body();
@@ -347,52 +375,27 @@ public class BizVerticle extends AbstractVerticle {
             }
         }
 
-        sendDB(daoId, JsonObject.mapFrom(sqlAndParams), replyHandler);
+        sendDB(daoId, JsonObject.mapFrom(sqlAndParams), replyHandler, cls);
     }
 
-    protected void operate(Message<?> msg, SqlAndParams sqlAndParams) {
-        sendDB(AbstractDao.OPERATE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
-    }
-
-    protected void operate(String sqlId, Message<?> msg, JsonObject append) {
+    protected <T> void operate(String sqlId, Message<?> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
         SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
-        sendDB(AbstractDao.OPERATE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams));
+        sendDB(AbstractDao.OPERATE, JsonObject.mapFrom(sqlAndParams), replyHandler, cls);
     }
 
-    protected <T> void operate(String sqlId, Message<?> msg, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler) {
-        SqlAndParams sqlAndParams = generateSqlAndParams(sqlId, msg, append);
-        sendDB(AbstractDao.OPERATE, JsonObject.mapFrom(sqlAndParams), replyHandler);
+    protected <T> void operate(String sqlId, Message<?> msg, BaseDo append, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
+        operate(sqlId, msg, new JsonObject(Json.encode(append)), replyHandler, cls);
     }
 
-    protected void batch(Message<?> msg, List<SqlAndParams> sqlAndParamsList) {
+    protected <T> void batch(List<SqlAndParams> sqlAndParamsList, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
         validateSqlAndParam(sqlAndParamsList);
-        sendDB(AbstractDao.BATCH, new JsonArray(sqlAndParamsList), bizResultHandler.apply(msg, sqlAndParamsList.get(0)));
-    }
-
-    protected <T> void batch(List<SqlAndParams> sqlAndParamsList, Handler<AsyncResult<Message<T>>> replyHandler) {
-        validateSqlAndParam(sqlAndParamsList);
-        sendDB(AbstractDao.BATCH, new JsonArray(sqlAndParamsList), replyHandler);
+        sendDB(AbstractDao.BATCH, new JsonArray(sqlAndParamsList), replyHandler, cls);
     }
 
     private void validateSqlAndParam(List<SqlAndParams> sqlAndParamsList) {
         if (sqlAndParamsList == null || sqlAndParamsList.isEmpty()) {
             throw new IllegalArgumentException("sqlAndParamsList 不能为空");
         }
-    }
-
-    /**
-     * do one by one, rollback when the deal number is 0
-     * sql "update ..." and its result is "deal number"
-     * rollback when error occur
-     * @param msg []
-     * @param sqlAndParamsList []
-     */
-    protected void transaction(Message<?> msg, List<SqlAndParams> sqlAndParamsList) {
-        validateSqlAndParam(sqlAndParamsList);
-        sendDB(AbstractDao.TRANSACTION,
-                new JsonArray(sqlAndParamsList.stream().map(JsonObject::mapFrom).collect(Collectors.toList())),
-                new DeliveryOptions().addHeader(Const.IGNORE, "0"),
-                bizResultHandler.apply(msg, sqlAndParamsList.get(0)));
     }
 
     /**
@@ -407,23 +410,9 @@ public class BizVerticle extends AbstractVerticle {
         sendDB(AbstractDao.TRANSACTION,
                 new JsonArray(sqlAndParamsList.stream().map(JsonObject::mapFrom).collect(Collectors.toList())),
                 new DeliveryOptions().addHeader(Const.IGNORE, "0"),
-                replyHandler);
+                replyHandler, Integer.class);
     }
 
-    /**
-     * do one by one, no matter the deal number is 0
-     * sql "update ..." and its result is "deal number"
-     * rollback when error occur
-     * @param msg []
-     * @param sqlAndParamsList []
-     */
-    protected void transactionIgnoreDealNum(Message<?> msg, List<SqlAndParams> sqlAndParamsList) {
-        validateSqlAndParam(sqlAndParamsList);
-        sendDB(AbstractDao.TRANSACTION,
-                new JsonArray(sqlAndParamsList.stream().map(JsonObject::mapFrom).collect(Collectors.toList())),
-                new DeliveryOptions().addHeader(Const.IGNORE, "1"),
-                bizResultHandler.apply(msg, sqlAndParamsList.get(0)));
-    }
 
     /**
      * do one by one, no matter the deal number is 0
@@ -437,14 +426,18 @@ public class BizVerticle extends AbstractVerticle {
         sendDB(AbstractDao.TRANSACTION,
                 new JsonArray(sqlAndParamsList.stream().map(JsonObject::mapFrom).collect(Collectors.toList())),
                 new DeliveryOptions().addHeader(Const.IGNORE, "1"),
-                replyHandler);
+                replyHandler,
+                Integer.class);
     }
 
-    private <T> void sendDB(String biz, Object obj, Handler<AsyncResult<Message<T>>> replyHandler) {
-        sendDB(biz, obj, new DeliveryOptions(), replyHandler);
+    private <T> void sendDB(String biz, Object obj, Handler<AsyncResult<Message<T>>> replyHandler, Class<?> cls) {
+        sendDB(biz, obj, new DeliveryOptions(), replyHandler, cls);
     }
 
-    private <T> void sendDB(String biz, Object obj, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
+    private <T> void sendDB(String biz, Object obj, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler, Class<?> cls) {
+        if (cls != null) {
+            deliveryOptions.addHeader(RETURN_CLASS_TYPE, cls.getName());
+        }
         vertx.eventBus().<T>request(biz, obj, deliveryOptions, replyHandler);
     }
 

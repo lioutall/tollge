@@ -5,6 +5,8 @@ import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -46,21 +48,30 @@ public class Properties {
                     while (resources.hasMoreElements()) {
                         URL resource = resources.nextElement();
                         String modulesPath = resource.getPath();
-                        if(!modulesPath.contains("jar!")){
-                            continue;
-                        }
+                        if(modulesPath.contains("target/classes")){
+                            File file = new File(modulesPath);
+                            File[] fs = file.listFiles();
+                            if(fs == null) continue;
+                            for(File f : fs){
+                                log.debug("遍历yml文件:{}", f.getName());
+                                try (InputStream fileIS = new FileInputStream(f)) {
+                                    Map<Object, Object> loadMap = yaml.load(fileIS);
+                                    proMap.putAll(flatRead("", loadMap));
+                                }
+                            }
+                        }else if(modulesPath.contains("jar!")){
+                            String jarPath = modulesPath.substring(5, modulesPath.length() - modulesDir.length() - 2);
 
-                        String jarPath = modulesPath.substring(5, modulesPath.length() - modulesDir.length() - 2);
-
-                        try(JarFile jarFile = new JarFile(jarPath)) {
-                            Enumeration<JarEntry> dd = jarFile.entries();
-                            while (dd.hasMoreElements()) {
-                                JarEntry entry = dd.nextElement();
-                                if (!entry.isDirectory() && entry.getName().startsWith(modulesDir + "/tollge-") && entry.getName().endsWith("yml")) {
-                                    log.debug("遍历yml文件:{}", entry.getName());
-                                    try (InputStream fileIS = jarFile.getInputStream(entry)) {
-                                        Map<Object, Object> loadMap = yaml.load(fileIS);
-                                        proMap.putAll(flatRead("", loadMap));
+                            try(JarFile jarFile = new JarFile(jarPath)) {
+                                Enumeration<JarEntry> dd = jarFile.entries();
+                                while (dd.hasMoreElements()) {
+                                    JarEntry entry = dd.nextElement();
+                                    if (!entry.isDirectory() && entry.getName().startsWith(modulesDir + "/tollge-") && entry.getName().endsWith("yml")) {
+                                        log.debug("遍历yml文件:{}", entry.getName());
+                                        try (InputStream fileIS = jarFile.getInputStream(entry)) {
+                                            Map<Object, Object> loadMap = yaml.load(fileIS);
+                                            proMap.putAll(flatRead("", loadMap));
+                                        }
                                     }
                                 }
                             }
