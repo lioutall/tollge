@@ -22,8 +22,6 @@ public class SqlAndParams {
     // 批量参数
     private List<Map<String, String>> batchParams;
 
-    private Class<?> resultType;
-
     // 分页参数
     private int limit;
     private int offset;
