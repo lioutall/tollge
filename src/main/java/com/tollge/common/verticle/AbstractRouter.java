@@ -9,7 +9,7 @@ import com.tollge.common.TollgeException;
 import com.tollge.common.UFailureHandler;
 import com.tollge.common.annotation.mark.Path;
 import com.tollge.common.annotation.mark.request.*;
-import com.tollge.common.auth.Subject;
+import com.tollge.common.auth.LoginUser;
 import com.tollge.common.util.Const;
 import com.tollge.common.util.MyVertx;
 import io.vertx.core.*;
@@ -180,77 +180,77 @@ public abstract class AbstractRouter {
     /**
      * 调用biz层
      */
-    protected <T> AsyncResult<T> sendBiz(String biz) {
+    protected <T> Future<T> sendBiz(String biz) {
         return Future.future(reply -> sendBiz(biz, getReplyHandler(reply)));
     }
 
-    protected <T> AsyncResult<T> sendBiz(String biz, Object o) {
+    protected <T> Future<T> sendBiz(String biz, Object o) {
         return Future.future(reply -> sendBiz(biz, o, getReplyHandler(reply)));
     }
 
-    protected <T> AsyncResult<T> sendBiz(String biz, Handler<AsyncResult<Message<T>>> replyHandler) {
-        return Future.future(reply -> sendBiz(biz, null, new DeliveryOptions(), replyHandler));
+    protected <T> void sendBiz(String biz, Handler<AsyncResult<Message<T>>> replyHandler) {
+        sendBiz(biz, null, new DeliveryOptions(), replyHandler);
     }
 
-    protected <T> AsyncResult<T> sendBiz(String biz, Object o, Handler<AsyncResult<Message<T>>> replyHandler) {
-        return Future.future(reply -> sendBiz(biz, o, new DeliveryOptions(), replyHandler));
+    protected <T> void sendBiz(String biz, Object o, Handler<AsyncResult<Message<T>>> replyHandler) {
+        sendBiz(biz, o, new DeliveryOptions(), replyHandler);
     }
 
     /**
      * 以下-----------     增加用户属性
      */
-    protected <T> AsyncResult<T> sendBizWithUser(JsonObject currentUser, String biz) {
-        return Future.future(reply -> sendBizWithUser(currentUser, biz, getReplyHandler(reply)));
+    protected <T> Future<T> sendBizWithUser(LoginUser loginUser, String biz) {
+        return Future.future(reply -> sendBizWithUser(loginUser, biz, getReplyHandler(reply)));
     }
 
-    protected <T> AsyncResult<T> sendBizWithUser(JsonObject currentUser, String biz, Object o) {
-        return Future.future(reply -> sendBizWithUser(currentUser, biz, o, getReplyHandler(reply)));
+    protected <T> Future<T> sendBizWithUser(LoginUser loginUser, String biz, Object o) {
+        return Future.future(reply -> sendBizWithUser(loginUser, biz, o, getReplyHandler(reply)));
     }
 
-    protected <T> AsyncResult<T> sendBizWithUser(JsonObject currentUser, String biz, Handler<AsyncResult<Message<T>>> replyHandler) {
+    protected <T> void sendBizWithUser(LoginUser loginUser, String biz, Handler<AsyncResult<Message<T>>> replyHandler) {
         DeliveryOptions deliveryOptions = new DeliveryOptions();
-        deliveryOptions.addHeader(Const.CURRENT_USER, currentUser.encode());
-        return Future.future(reply -> sendBiz(biz, null, deliveryOptions, replyHandler));
+        deliveryOptions.addHeader(Const.LOGIN_USER, JsonObject.mapFrom(loginUser).encode());
+        sendBiz(biz, null, deliveryOptions, replyHandler);
     }
 
-    protected <T> AsyncResult<T> sendBizWithUser(JsonObject currentUser, String biz, Object o, Handler<AsyncResult<Message<T>>> replyHandler) {
+    protected <T> void sendBizWithUser(LoginUser loginUser, String biz, Object o, Handler<AsyncResult<Message<T>>> replyHandler) {
         DeliveryOptions deliveryOptions = new DeliveryOptions();
-        deliveryOptions.addHeader(Const.CURRENT_USER, currentUser.encode());
-        return Future.future(reply -> sendBiz(biz, o, deliveryOptions, replyHandler));
+        deliveryOptions.addHeader(Const.LOGIN_USER, JsonObject.mapFrom(loginUser).encode());
+        sendBiz(biz, o, deliveryOptions, replyHandler);
     }
 
-    protected <T> AsyncResult<T> sendBizWithUser(RoutingContext rct, String biz) {
-        JsonObject currentUser = Subject.getCurrentSubject(rct).getPrincipal();
-        return Future.future(reply -> sendBizWithUser(currentUser, biz, getReplyHandler(reply)));
+    protected <T> Future<T> sendBizWithUser(RoutingContext rct, String biz) {
+        LoginUser loginUser = rct.get(Const.LOGIN_USER);
+        return Future.future(reply -> sendBizWithUser(loginUser, biz, getReplyHandler(reply)));
     }
 
-    protected <T> AsyncResult<T> sendBizWithUser(RoutingContext rct, String biz, Object o) {
-        JsonObject currentUser = Subject.getCurrentSubject(rct).getPrincipal();
-        return Future.future(reply -> sendBizWithUser(currentUser, biz, o, getReplyHandler(reply)));
+    protected <T> Future<T> sendBizWithUser(RoutingContext rct, String biz, Object o) {
+        LoginUser loginUser = rct.get(Const.LOGIN_USER);
+        return Future.future(reply -> sendBizWithUser(loginUser, biz, o, getReplyHandler(reply)));
     }
 
-    protected <T> AsyncResult<T> sendBizWithUser(RoutingContext rct, String biz, Handler<AsyncResult<Message<T>>> replyHandler) {
-        JsonObject currentUser = Subject.getCurrentSubject(rct).getPrincipal();
+    protected <T> void sendBizWithUser(RoutingContext rct, String biz, Handler<AsyncResult<Message<T>>> replyHandler) {
+        LoginUser loginUser = rct.get(Const.LOGIN_USER);
         DeliveryOptions deliveryOptions = new DeliveryOptions();
-        deliveryOptions.addHeader(Const.CURRENT_USER, currentUser.encode());
-        return Future.future(reply -> sendBiz(biz, null, deliveryOptions, replyHandler));
+        deliveryOptions.addHeader(Const.LOGIN_USER, JsonObject.mapFrom(loginUser).encode());
+        sendBiz(biz, null, deliveryOptions, replyHandler);
     }
 
-    protected <T> AsyncResult<T> sendBizWithUser(RoutingContext rct, String biz, Object o, Handler<AsyncResult<Message<T>>> replyHandler) {
-        JsonObject currentUser = Subject.getCurrentSubject(rct).getPrincipal();
+    protected <T> void sendBizWithUser(RoutingContext rct, String biz, Object o, Handler<AsyncResult<Message<T>>> replyHandler) {
+        LoginUser loginUser = rct.get(Const.LOGIN_USER);
         DeliveryOptions deliveryOptions = new DeliveryOptions();
-        deliveryOptions.addHeader(Const.CURRENT_USER, currentUser.encode());
-        return Future.future(reply -> sendBiz(biz, o, deliveryOptions, replyHandler));
+        deliveryOptions.addHeader(Const.LOGIN_USER, JsonObject.mapFrom(loginUser).encode());
+        sendBiz(biz, o, deliveryOptions, replyHandler);
     }
 
     /**
      * 底层调用
      */
-    private <T> AsyncResult sendBiz(String biz, Object jo, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
-        return Future.future(reply -> MyVertx.vertx().eventBus().<T>request(biz, jo, deliveryOptions, replyHandler));
+    private <T> void sendBiz(String biz, Object jo, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
+        MyVertx.vertx().eventBus().<T>request(biz, jo, deliveryOptions, replyHandler);
     }
 
-    private <T> Handler<AsyncResult<Message<T>>> getReplyHandler(Promise<T> reply) {
+    protected  <T> Handler<AsyncResult<Message<T>>> getReplyHandler(Promise<T> reply) {
         return messageReply -> {
             if (messageReply.succeeded()) {
                 reply.complete(messageReply.result().body());

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @NoArgsConstructor
-public class BaseDo implements Serializable {
+public class BaseModel implements Serializable {
+
 
 }

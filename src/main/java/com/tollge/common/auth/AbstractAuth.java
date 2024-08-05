@@ -7,45 +7,40 @@ import com.tollge.common.util.Const;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.auth.User;
 import io.vertx.ext.web.RoutingContext;
+
+import java.util.Set;
 
 public abstract class AbstractAuth {
 
     /**
-     * 新增subject到缓存
+     * 新增user到缓存
      * @param key []
-     * @param subject []
+     * @param user []
      * @param resultHandler []
      */
-    public abstract void addSubject(String key, Subject subject, Handler<AsyncResult<String>> resultHandler);
+    public abstract void cacheLoginUser(String key, LoginUser user, Handler<AsyncResult<Boolean>> resultHandler);
 
     /**
      * 从缓存获取
      * @param key []
      * @param resultHandler []
      */
-    public abstract void getSubject(String key, Handler<AsyncResult<Subject>> resultHandler);
+    public abstract void getLoginUser(String key, Handler<AsyncResult<LoginUser>> resultHandler);
 
     /**
      * 移除缓存
      * @param key []
      * @param resultHandler []
      */
-    public abstract void removeSubject(String key, Handler<AsyncResult<Void>> resultHandler);
-
-    /**
-     * 刷新时间
-     * @param key []
-     */
-    public abstract void refreshTime(String key);
+    public abstract void removeLoginUser(String key, Handler<AsyncResult<Boolean>> resultHandler);
 
     /**
      * 定时清除缓存
      * 需要定时器,返回true
      * @return 操作结果
      */
-    public abstract boolean clearSubjects();
+    public abstract boolean clearLoginUser();
 
     /**
      * 鉴权成功, 把鉴权关键字通知浏览器
@@ -62,18 +57,16 @@ public abstract class AbstractAuth {
     public abstract String fetchFromBrowser(RoutingContext ctx);
 
     /**
-     * 登录
-     * @param ctx []
-     * @param authInfo []
-     * @param resultHandler []
-     */
-    public abstract void login(RoutingContext ctx, JsonObject authInfo, Handler<AsyncResult<User>> resultHandler);
-
-    /**
      * 获取匿名权限列表
      * @param resultHandler []
      */
-    public abstract void getAnnoPremissions(Handler<AsyncResult<ImmutableSet<String>>> resultHandler);
+    public abstract void getAnnoPermissions(Handler<AsyncResult<Set<String>>> resultHandler);
+
+    /**
+     * 校验权限
+     * @param resultHandler .
+     */
+    public abstract void checkPermission(String permission, RoutingContext ctx, Handler<AsyncResult<Boolean>> resultHandler);
 
     /**
      * 用户不具备访问permission权限处理
@@ -93,8 +86,8 @@ public abstract class AbstractAuth {
 
     /**
      * 踢出关键字的用户
-     * @param key
-     * @param resultHandler
+     * @param key .
+     * @param resultHandler .
      */
-    public abstract void kickUser(String key, Handler<AsyncResult<Boolean>> resultHandler);
+    public abstract void kickLoginUser(String key, Handler<AsyncResult<Boolean>> resultHandler);
 }

@@ -4,6 +4,7 @@ import com.tollge.common.StatusCodeMsg;
 import com.tollge.common.UFailureHandler;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.eventbus.Message;
 import io.vertx.ext.web.RoutingContext;
 import lombok.NoArgsConstructor;
@@ -41,6 +42,17 @@ public class Handle {
                 }
             } else {
                 rct.response().end(UFailureHandler.commonFailure(ar.cause()));
+            }
+        };
+    }
+
+    public static <T> Handler<AsyncResult<T>> fromHandler(Promise<T> reply) {
+        return (r) -> {
+            if (r.succeeded()) {
+                reply.complete(r.result());
+            } else {
+                log.error("fromHandler error", r.cause());
+                reply.fail(r.cause().getMessage());
             }
         };
     }

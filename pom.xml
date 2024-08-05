@@ -31,7 +31,7 @@
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
 
-        <vertx.version>4.5.8</vertx.version>
+        <vertx.version>4.5.9</vertx.version>
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
 
     </properties>
@@ -85,36 +85,17 @@
             <version>1.11.9</version>
         </dependency>
 
-        <!--多级缓存-->
-        <dependency>
-            <groupId>com.alicp.jetcache</groupId>
-            <artifactId>jetcache-core</artifactId>
-            <version>2.6.7</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>fastjson</artifactId>
-                    <groupId>com.alibaba</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>
             <artifactId>fastjson2</artifactId>
             <version>2.0.52</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.alicp.jetcache</groupId>
-            <artifactId>jetcache-redis-lettuce</artifactId>
-            <version>2.6.7</version>
-        </dependency>
-
         <!--yaml工具-->
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.33</version>
+            <version>2.2</version>
         </dependency>
 
         <!--其他-->
@@ -126,12 +107,12 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.1-jre</version>
+            <version>33.2.1-jre</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.5</version>
+            <version>2.16.1</version>
         </dependency>
 
         <dependency>

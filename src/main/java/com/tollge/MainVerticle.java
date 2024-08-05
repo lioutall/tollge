@@ -88,7 +88,7 @@ public class MainVerticle extends AbstractVerticle {
                 log.info("启动完成...");
                 fut.complete();
             } else {
-                log.error("启动失败");
+                log.error("启动失败", res.cause());
                 fut.fail(res.cause());
             }
         });
