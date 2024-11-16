@@ -1,5 +1,6 @@
 package com.tollge.common.verticle;
 
+import com.tollge.common.SqlAndParams;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
@@ -70,7 +71,7 @@ public abstract class AbstractDao extends AbstractVerticle {
 
     protected abstract void operate(Message<JsonObject> msg);
 
-    protected abstract void batch(Message<JsonArray> msg);
+    protected abstract void batch(Message<SqlAndParams> msg);
 
     protected abstract void transaction(Message<JsonArray> msg);
 

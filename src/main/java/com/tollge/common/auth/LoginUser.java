@@ -12,10 +12,6 @@ import java.util.List;
 @ToString
 public class LoginUser extends BaseModel {
     /*
-     * 自增主键
-     */
-    private Integer id;
-    /*
      * 用户id
      */
     private Long userId;

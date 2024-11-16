@@ -12,7 +12,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-public class SqlAndParams {
+public class SqlAndParams extends BaseModel{
     /**
      * SQL语句关键字
      */
@@ -20,7 +20,7 @@ public class SqlAndParams {
     // 参数
     private Map<String, Object> params;
     // 批量参数
-    private List<Map<String, String>> batchParams;
+    private List<Map<String, Object>> batchParams;
 
     // 分页参数
     private int limit;
