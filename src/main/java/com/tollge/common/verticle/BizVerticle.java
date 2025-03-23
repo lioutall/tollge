@@ -287,6 +287,18 @@ public class BizVerticle extends AbstractVerticle {
     protected <T> void one(String sqlId, Message<?> msg, BaseModel query, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
         one(sqlId, msg, new JsonObject(Json. encode(query)), replyHandler, cls);
     }
+    
+    protected <T> void one(String sqlId, BaseModel query, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
+        one(sqlId, new JsonObject(Json. encode(query)), replyHandler, cls);
+    }
+    
+    protected <T> void one(String sqlId, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
+        SqlAndParams sqlAndParams = new SqlAndParams(sqlId);
+        if (append != null && !append.isEmpty()) {
+            append.forEach(entry -> sqlAndParams.putParam(entry.getKey(), entry.getValue()));
+        }
+        sendDB(AbstractDao.ONE, JsonObject.mapFrom(sqlAndParams), replyHandler, cls);
+    }
 
     private SqlAndParams generateSqlAndParams(String sqlId, Message<?> msg, JsonObject append) {
         SqlAndParams sqlAndParams = new SqlAndParams(sqlId);

@@ -13,6 +13,7 @@ import com.tollge.common.auth.LoginUser;
 import com.tollge.common.util.Const;
 import com.tollge.common.util.MyVertx;
 import io.vertx.core.*;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpServerRequest;
@@ -139,7 +140,11 @@ public abstract class AbstractRouter {
                                 if (rct.response().closed()) {
                                     log.error("response is closed, reply:{}", Json.encode(res));
                                 } else {
-                                    rct.response().end(ResultFormat.format(StatusCodeMsg.C200, res.result()));
+                                    if (result instanceof Buffer) {
+                                        rct.response().end(Buffer.buffer((byte[]) res.result()));
+                                    } else {
+                                        rct.response().end(ResultFormat.format(StatusCodeMsg.C200, res.result()));
+                                    }
                                 }
                             }
                         } else {

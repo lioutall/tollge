@@ -6,10 +6,8 @@ public class Const {
     public static final String CHILDREN = "children";
     public static final String PARAMS = "params";
     public static final String STATUS = "status";
-    public static final String CURRENT_USER = "currentUser";
     public static final String LOGIN_USER = "loginUser";
     public static final String AUTH_CUSTOM= "authCustom";
-    public static final String CURRENT_USER_ID = "currentUserId";
     public static final String ID = "id";
 
     public static final String TOLLGE_PAGE_COUNT = "X-Total-Count";

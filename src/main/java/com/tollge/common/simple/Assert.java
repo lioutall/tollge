@@ -17,15 +17,15 @@ public class Assert {
     
     public static void check(boolean condition, String msg) {
         if (!condition) {
-            log.error(msg);
-            throw new TollgeException(msg);
+            log.warn(msg);
+            throw new IllegalArgumentException(msg);
         }
     }
     
     public static void check(boolean condition, String msg, Object... args) {
         if (!condition) {
-            log.error(msg, args);
-            throw new TollgeException(msg);
+            log.warn(msg, args);
+            throw new IllegalArgumentException(msg);
         }
     }
     

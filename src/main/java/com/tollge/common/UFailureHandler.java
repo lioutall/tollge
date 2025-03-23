@@ -1,6 +1,7 @@
 package com.tollge.common;
 
 import io.vertx.core.eventbus.ReplyException;
+import io.vertx.core.impl.NoStackTraceThrowable;
 import io.vertx.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,6 +49,9 @@ public class UFailureHandler {
 			return ResultFormat.formatError(asStatus, cause.getMessage());
 		} else if(cause instanceof IllegalArgumentException) {
 			return ResultFormat.formatError(StatusCodeMsg.C414, cause.getMessage());
+		} else if (cause instanceof NoStackTraceThrowable) {
+			log.warn("unknown exceptions:", cause);
+			return ResultFormat.formatError(StatusCodeMsg.C413, cause.getMessage());
 		} else {
 			log.error("unknown exceptions:", cause);
 			return ResultFormat.formatError(StatusCodeMsg.C412, cause.getMessage());
