@@ -287,11 +287,11 @@ public class BizVerticle extends AbstractVerticle {
     protected <T> void one(String sqlId, Message<?> msg, BaseModel query, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
         one(sqlId, msg, new JsonObject(Json. encode(query)), replyHandler, cls);
     }
-    
+
     protected <T> void one(String sqlId, BaseModel query, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
         one(sqlId, new JsonObject(Json. encode(query)), replyHandler, cls);
     }
-    
+
     protected <T> void one(String sqlId, JsonObject append, Handler<AsyncResult<Message<T>>> replyHandler, Class<T> cls) {
         SqlAndParams sqlAndParams = new SqlAndParams(sqlId);
         if (append != null && !append.isEmpty()) {
@@ -340,7 +340,7 @@ public class BizVerticle extends AbstractVerticle {
     protected <T> void count(String sqlId, Message<?> msg, BaseModel query, Handler<AsyncResult<Message<T>>> replyHandler) {
         count(sqlId, msg, new JsonObject(Json.encode(query)), replyHandler);
     }
-    
+
     protected <T> void list(Message<?> msg, SqlAndParams sqlAndParams) {
         sendDB(AbstractDao.LIST, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams), null);
     }
@@ -349,9 +349,23 @@ public class BizVerticle extends AbstractVerticle {
         sendDB(AbstractDao.LIST, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams), cls);
     }
 
-    protected <T> void page(Message<?> msg, SqlAndParams sqlAndParams, Class<? extends BaseModel> cls) {
-        sendDB(AbstractDao.PAGE, JsonObject.mapFrom(sqlAndParams), bizResultHandler.apply(msg, sqlAndParams), cls);
-    }
+  protected <T> Future<Page<T>> page(String sqlId, JsonObject append, Class<T> cls) {
+    return Future.future(reply -> {
+      SqlAndParams sqlAndParams = new SqlAndParams(sqlId, append.getInteger("pageNum"), append.getInteger("pageSize"));
+      for (Map.Entry<String, Object> entry : append) {
+        sqlAndParams.putParam(entry.getKey(), entry.getValue());
+      }
+      sendDB(AbstractDao.PAGE, JsonObject.mapFrom(sqlAndParams), getReplyHandler(reply), cls);});
+  }
+
+  protected <T> Future<Page<T>> page(String sqlId, PageRequest request, Class<T> cls) {
+    return Future.future(reply -> {
+      SqlAndParams sqlAndParams = new SqlAndParams(sqlId, request.getPageNum(), request.getPageSize());
+      for (Map.Entry<String, Object> entry : JsonObject.mapFrom(request)) {
+        sqlAndParams.putParam(entry.getKey(), entry.getValue());
+      }
+      sendDB(AbstractDao.PAGE, JsonObject.mapFrom(sqlAndParams), getReplyHandler(reply), cls);});
+  }
 
     protected void list(String sqlId, Message<?> msg, JsonObject append) {
         list(sqlId, msg, append, replyHandler(msg), null);
@@ -384,7 +398,7 @@ public class BizVerticle extends AbstractVerticle {
     protected <T> void list(String sqlId, Message<?> msg, BaseModel query, Handler<AsyncResult<Message<List<T>>>> replyHandler, Class<T> cls) {
         list(sqlId, msg, new JsonObject(Json.encode(query)), replyHandler, cls);
     }
-    
+
     protected <T> Future<List<T>> list(String sqlId, JsonObject append, Class<T> cls) {
         return Future.future(reply -> {
             SqlAndParams sqlAndParams = new SqlAndParams(sqlId);
@@ -497,50 +511,50 @@ public class BizVerticle extends AbstractVerticle {
     private <T> void redirect(String biz, Object obj, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
         vertx.eventBus().request(biz, obj, deliveryOptions, replyHandler);
     }
-    
+
     /**
      * 调用其他业务
      */
     protected <T> Future<T> callBiz(String biz) {
         return Future.future(reply -> callBiz(biz, getReplyHandler(reply)));
     }
-    
+
     protected <T> Future<T> callBiz(String biz, Object o) {
         return Future.future(reply -> callBiz(biz, o, getReplyHandler(reply)));
     }
-    
+
     protected <T> void callBiz(String biz, Handler<AsyncResult<Message<T>>> replyHandler) {
         callBiz(biz, null, new DeliveryOptions(), replyHandler);
     }
-    
+
     protected <T> void callBiz(String biz, Object o, Handler<AsyncResult<Message<T>>> replyHandler) {
         callBiz(biz, o, new DeliveryOptions(), replyHandler);
     }
-    
+
     protected <T> Future<T> callBizWithUser(LoginUser loginUser, String biz) {
         return Future.future(reply -> callBizWithUser(loginUser, biz, getReplyHandler(reply)));
     }
-    
+
     protected <T> Future<T> callBizWithUser(LoginUser loginUser, String biz, Object o) {
         return Future.future(reply -> sendBizWithUser(loginUser, biz, o, getReplyHandler(reply)));
     }
-    
+
     protected <T> void callBizWithUser(LoginUser loginUser, String biz, Handler<AsyncResult<Message<T>>> replyHandler) {
         DeliveryOptions deliveryOptions = new DeliveryOptions();
         deliveryOptions.addHeader(Const.LOGIN_USER, JsonObject.mapFrom(loginUser).encode());
         callBiz(biz, null, deliveryOptions, replyHandler);
     }
-    
+
     protected <T> void sendBizWithUser(LoginUser loginUser, String biz, Object o, Handler<AsyncResult<Message<T>>> replyHandler) {
         DeliveryOptions deliveryOptions = new DeliveryOptions();
         deliveryOptions.addHeader(Const.LOGIN_USER, JsonObject.mapFrom(loginUser).encode());
         callBiz(biz, o, deliveryOptions, replyHandler);
     }
-    
+
     private <T> void callBiz(String biz, Object jo, DeliveryOptions deliveryOptions, Handler<AsyncResult<Message<T>>> replyHandler) {
         MyVertx.vertx().eventBus().<T>request(biz, jo, deliveryOptions, replyHandler);
     }
-    
+
     protected  <T> Handler<AsyncResult<Message<T>>> getReplyHandler(Promise<T> reply) {
         return messageReply -> {
             if (messageReply.succeeded()) {
@@ -550,7 +564,7 @@ public class BizVerticle extends AbstractVerticle {
             }
         };
     }
-    
+
     protected <T> Handler<Throwable> throwableHandler(Message msg) {
         return err -> {
             log.error("throwableHandler", err);

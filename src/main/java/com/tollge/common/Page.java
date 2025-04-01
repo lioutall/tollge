@@ -1,12 +1,9 @@
 package com.tollge.common;
 
-import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Page<E> extends ArrayList<E> {
+public class Page<E> extends BaseModel {
     private static final long serialVersionUID = 1L;
 
     /** 页码，从1开始     */
@@ -21,30 +18,28 @@ public class Page<E> extends ArrayList<E> {
     private long total;
     /** 总页数     */
     private int pages;
-    /** 包含count查询     */
-    private boolean count = true;
 
-    public Page() {
-        super();
+    private List<E> result = new ArrayList<>();
+
+    public Page(){
+
     }
 
     public Page(int pageNum, int pageSize) {
-        this(pageNum, pageSize, true);
-    }
-
-    public Page(int pageNum, int pageSize, boolean count) {
-        super(0);
         if (pageNum == 1 && pageSize == Integer.MAX_VALUE) {
             pageSize = 0;
         }
         this.pageNum = pageNum;
         this.pageSize = pageSize;
-        this.count = count;
         calculateStartAndEndRow();
     }
 
     public List<E> getResult() {
-        return this;
+        return this.result;
+    }
+
+    public void setResult(List<E> result) {
+        this.result = result;
     }
 
     public int getPages() {
@@ -125,15 +120,6 @@ public class Page<E> extends ArrayList<E> {
         this.endRow = this.startRow + this.pageSize * (this.pageNum > 0 ? 1 : 0);
     }
 
-    public boolean isCount() {
-        return this.count;
-    }
-
-    public Page<E> setCount(boolean count) {
-        this.count = count;
-        return this;
-    }
-
     /**
      * 设置页码
      *
@@ -158,27 +144,5 @@ public class Page<E> extends ArrayList<E> {
         return this;
     }
 
-    /**
-     * 是否执行count查询
-     *
-     * @param count
-     * @return
-     */
-    public Page<E> count(Boolean count) {
-        this.count = count;
-        return this;
-    }
 
-    @Override
-    public String toString() {
-        return "Page{" +
-                "count=" + count +
-                ", pageNum=" + pageNum +
-                ", pageSize=" + pageSize +
-                ", startRow=" + startRow +
-                ", endRow=" + endRow +
-                ", total=" + total +
-                ", pages=" + pages +
-                '}' + super.toString();
-    }
 }

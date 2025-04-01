@@ -1,6 +1,7 @@
 package com.tollge.common.auth;
 
 import com.tollge.common.BaseModel;
+import io.vertx.core.json.JsonObject;
 import lombok.*;
 
 import java.util.Date;
@@ -38,5 +39,7 @@ public class LoginUser extends BaseModel {
      * 第一个是主角色
      */
     private List<Long> roleIdList;
+
+    private JsonObject paramJson;
 
 }

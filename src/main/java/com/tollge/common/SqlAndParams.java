@@ -5,9 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -18,9 +16,9 @@ public class SqlAndParams extends BaseModel{
      */
     private String sqlKey;
     // 参数
-    private Map<String, Object> params;
+    private TollgeMap<String, Object> params;
     // 批量参数
-    private List<Map<String, Object>> batchParams;
+    private List<TollgeMap<String, Object>> batchParams;
 
     // 分页参数
     private int limit;
@@ -35,7 +33,8 @@ public class SqlAndParams extends BaseModel{
 
     public SqlAndParams(String sqlKey, JsonObject jsonObject) {
         this.sqlKey = sqlKey;
-        params = jsonObject.getMap();
+      params = new TollgeMap<>();
+        params.putAll(jsonObject.getMap());
     }
 
     public SqlAndParams(String sqlKey, Integer currentPage, Integer pageSize) {
@@ -53,7 +52,7 @@ public class SqlAndParams extends BaseModel{
 
     public SqlAndParams putParam(String key, Object value) {
         if (params == null) {
-            params = new HashMap<>();
+            params = new TollgeMap<>();
         }
         params.put(key, value);
         return this;
@@ -61,7 +60,7 @@ public class SqlAndParams extends BaseModel{
 
     public SqlAndParams putParam(String key, String value) {
         if (params == null) {
-            params = new HashMap<>();
+            params = new TollgeMap<>();
         }
         params.put(key, value);
         return this;
@@ -69,7 +68,7 @@ public class SqlAndParams extends BaseModel{
 
     public SqlAndParams putParam(String key, List value) {
         if (params == null) {
-            params = new HashMap<>();
+            params = new TollgeMap<>();
         }
         params.put(key, value);
         return this;
@@ -77,7 +76,7 @@ public class SqlAndParams extends BaseModel{
 
     public SqlAndParams putParam(String key, Integer value) {
         if (params == null) {
-            params = new HashMap<>();
+            params = new TollgeMap<>();
         }
         params.put(key, value);
         return this;
