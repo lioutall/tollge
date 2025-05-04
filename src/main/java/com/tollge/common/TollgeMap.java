@@ -14,31 +14,30 @@ public class TollgeMap<K, V> extends LinkedHashMap<K, V> {
     // 检查获取的值是否为List类型
     if (value instanceof List) {
       List<?> originalList = (List<?>) value;
-      List<TollgeMap<String, Object>> convertedList = new ArrayList<>();
+      if (!originalList.isEmpty() && originalList.get(0) instanceof Map) {
+        List<TollgeMap<String, Object>> convertedList = new ArrayList<>();
 
-      for (Object item : originalList) {
-        if (item instanceof Map) {
-          Map<?, ?> mapItem = (Map<?, ?>) item;
-          TollgeMap<String, Object> customMapItem = new TollgeMap<>();
+        for (Object item : originalList) {
+            Map<?, ?> mapItem = (Map<?, ?>) item;
+            TollgeMap<String, Object> customMapItem = new TollgeMap<>();
 
-          // 遍历原Map的条目，复制到CustomMap中
-          for (Map.Entry<?, ?> entry : mapItem.entrySet()) {
-            Object entryKey = entry.getKey();
-            Object entryValue = entry.getValue();
+            // 遍历原Map的条目，复制到CustomMap中
+            for (Map.Entry<?, ?> entry : mapItem.entrySet()) {
+              Object entryKey = entry.getKey();
+              Object entryValue = entry.getValue();
 
-            // 确保键和值的类型正确
-            if (entryKey instanceof String) {
-              customMapItem.put((String) entryKey, entryValue);
-            } else {
-              throw new IllegalArgumentException("Map entry has invalid types. Expected Integer key and String value.");
+              // 确保键和值的类型正确
+              if (entryKey instanceof String) {
+                customMapItem.put((String) entryKey, entryValue);
+              } else {
+                throw new IllegalArgumentException("Map entry has invalid types. Expected Integer key and String value.");
+              }
             }
-          }
-          convertedList.add(customMapItem);
+            convertedList.add(customMapItem);
         }
+        // 由于类型擦除，此处进行强制转换
+        return (V) convertedList;
       }
-
-      // 由于类型擦除，此处进行强制转换
-      return (V) convertedList;
     }
 
     return value;

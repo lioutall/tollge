@@ -43,7 +43,10 @@ public class BizVerticle extends AbstractVerticle {
         if (res.succeeded()) {
             msg.reply(res.result().body());
         } else {
-            if (res.cause() instanceof IllegalArgumentException) {
+            if (res.cause() instanceof NumberFormatException) {
+              log.warn("Biz NumberFormatException", res.cause());
+              msg.fail(StatusCodeMsg.C414.getCode(), res.cause().getMessage());
+            } if (res.cause() instanceof IllegalArgumentException) {
                 msg.fail(StatusCodeMsg.C414.getCode(), res.cause().getMessage());
             } else {
                 log.error("Biz failed", res.cause());
@@ -68,6 +71,9 @@ public class BizVerticle extends AbstractVerticle {
                     // validateAndInit(m, msg);
                     // 最终调用
                     access.invoke(this, methodIndex, msg);
+                } catch (NumberFormatException e) {
+                    log.error("[{}]NumberFormatException", path, e);
+                  msg.fail(StatusCodeMsg.C414.getCode(), e.getMessage());
                 } catch (IllegalArgumentException e) {
                     msg.fail(StatusCodeMsg.C414.getCode(), e.getMessage());
                 } catch (Exception e) {
@@ -378,12 +384,15 @@ public class BizVerticle extends AbstractVerticle {
             if (res.succeeded()) {
                 msg.reply(res.result().body());
             } else {
-                if (res.cause() instanceof IllegalArgumentException) {
-                    msg.fail(StatusCodeMsg.C414.getCode(), res.cause().getMessage());
-                } else {
-                    log.error("Biz failed", res.cause());
-                    msg.fail(StatusCodeMsg.C501.getCode(), res.cause().getMessage());
-                }
+              if (res.cause() instanceof NumberFormatException) {
+                log.warn("Biz NumberFormatException", res.cause());
+                msg.fail(StatusCodeMsg.C414.getCode(), res.cause().getMessage());
+              }else if (res.cause() instanceof IllegalArgumentException) {
+                msg.fail(StatusCodeMsg.C414.getCode(), res.cause().getMessage());
+              } else {
+                log.error("Biz failed", res.cause());
+                msg.fail(StatusCodeMsg.C501.getCode(), res.cause().getMessage());
+              }
             }
         };
     }

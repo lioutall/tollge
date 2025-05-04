@@ -260,6 +260,7 @@ public abstract class AbstractRouter {
             if (messageReply.succeeded()) {
                 reply.complete(messageReply.result().body());
             } else {
+                log.error("ReplyHandler error", messageReply.cause());
                 reply.fail(messageReply.cause());
             }
         };
