@@ -120,7 +120,7 @@ public class Properties {
         if(o == null) {
             return defaultStr;
         }
-        String str = (String) o;
+        String str = o.toString();
         if (StringUtil.isNullOrEmpty(str)) {
             return defaultStr;
         }
@@ -132,7 +132,7 @@ public class Properties {
         if(o == null) {
             return null;
         }
-        return (String) o;
+      return o.toString();
     }
 
     public static Boolean getBoolean(String group, String key) {
