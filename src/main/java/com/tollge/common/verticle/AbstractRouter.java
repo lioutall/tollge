@@ -76,7 +76,7 @@ public abstract class AbstractRouter {
                                 if (indexAnnotations[0].annotationType().isAssignableFrom(CookieParam.class)) {
                                     CookieParam cookieParam = (CookieParam) indexAnnotations[0];
                                     parameters[i] = request.getCookie(cookieParam.value());
-                                    Preconditions.checkArgument(cookieParam.required() && parameters[i] != null, cookieParam.value() + " is required");
+                                    Preconditions.checkArgument(!cookieParam.required() || parameters[i] != null, cookieParam.value() + " is required");
                                     if (parameters[i] != null) {
                                         parameters[i] = request.getCookie(cookieParam.value()).getValue();
                                     }
@@ -86,28 +86,28 @@ public abstract class AbstractRouter {
                                 } else if (indexAnnotations[0].annotationType().isAssignableFrom(FormParam.class)) {
                                     FormParam formParam = (FormParam) indexAnnotations[0];
                                     parameters[i] = request.getFormAttribute(formParam.value());
-                                    Preconditions.checkArgument(formParam.required() && parameters[i] != null, formParam.value() + " is required");
+                                    Preconditions.checkArgument(!formParam.required() || parameters[i] != null, formParam.value() + " is required");
                                     checkMinLength((String) parameters[i], formParam.value(), formParam.minLength());
                                     checkMaxLength((String) parameters[i], formParam.value(), formParam.maxLength());
                                     checkRegex((String) parameters[i], formParam.value(), formParam.regex());
                                 } else if (indexAnnotations[0].annotationType().isAssignableFrom(HeaderParam.class)) {
                                     HeaderParam headerParam = (HeaderParam) indexAnnotations[0];
                                     parameters[i] = request.getHeader(headerParam.value());
-                                    Preconditions.checkArgument(headerParam.required() && parameters[i] != null, headerParam.value() + " is required");
+                                    Preconditions.checkArgument(!headerParam.required() || parameters[i] != null, headerParam.value() + " is required");
                                     checkMinLength((String) parameters[i], headerParam.value(), headerParam.minLength());
                                     checkMaxLength((String) parameters[i], headerParam.value(), headerParam.maxLength());
                                     checkRegex((String) parameters[i], headerParam.value(), headerParam.regex());
                                 } else if (indexAnnotations[0].annotationType().isAssignableFrom(PathParam.class)) {
                                     PathParam pathParam = (PathParam) indexAnnotations[0];
                                     parameters[i] = request.getParam(((PathParam) indexAnnotations[0]).value());
-                                    Preconditions.checkArgument(pathParam.required() && parameters[i] != null, pathParam.value() + " is required");
+                                    Preconditions.checkArgument(!pathParam.required() || parameters[i] != null, pathParam.value() + " is required");
                                     checkMinLength((String) parameters[i], pathParam.value(), pathParam.minLength());
                                     checkMaxLength((String) parameters[i], pathParam.value(), pathParam.maxLength());
                                     checkRegex((String) parameters[i], pathParam.value(), pathParam.regex());
                                 } else if (indexAnnotations[0].annotationType().isAssignableFrom(QueryParam.class)) {
                                     QueryParam param = (QueryParam) indexAnnotations[0];
                                     parameters[i] = request.getParam(param.value());
-                                    Preconditions.checkArgument(param.required() && parameters[i] != null, param.value() + " is required");
+                                    Preconditions.checkArgument(!param.required() || parameters[i] != null, param.value() + " is required");
                                     checkMinLength((String) parameters[i], param.value(), param.minLength());
                                     checkMaxLength((String) parameters[i], param.value(), param.maxLength());
                                     checkRegex((String) parameters[i], param.value(), param.regex());
